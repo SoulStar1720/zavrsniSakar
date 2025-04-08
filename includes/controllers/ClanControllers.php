@@ -6,7 +6,7 @@ class ClanController {
         $this->conn = $conn;
     }
 
-    /*
+    // praginacija članova, radai da ako ima puno članova da se vide u stranicama po maksimalno 10 članova, trenutačno nepotrebno ali nek ostane
     public function getAllMembers(int $page = 1, int $perPage = 10): array {
         $offset = ($page - 1) * $perPage;
         
@@ -20,7 +20,7 @@ class ClanController {
         $stmt->execute();
         
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }*/
+    }
 
     //Dohvaćanje člana po 
     public function getMemberById(int $id): ?array {
