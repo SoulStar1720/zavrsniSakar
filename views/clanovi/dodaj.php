@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'prezime' => trim($_POST['prezime']),
         'email' => trim($_POST['email']),
         'lozinka' => trim($_POST['lozinka']),
-        'tip' => $_POST['tip'],
         'role' => $_POST['role'] ?? 'user'
     ];
 
@@ -67,14 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="col-12">
                         <label class="form-label">Lozinka</label>
                         <input type="password" name="lozinka" class="form-control" required>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <label class="form-label">Tip člana</label>
-                        <select name="tip" class="form-select" required>
-                            <option value="student">Student</option>
-                            <option value="profesor">Profesor</option>
-                        </select>
                     </div>
                     
                     <?php if ($_SESSION['user_role'] === 'admin'): ?>

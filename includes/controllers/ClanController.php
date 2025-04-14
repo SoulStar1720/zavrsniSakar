@@ -5,13 +5,12 @@ class ClanController {
     public function __construct(mysqli $conn) {
         $this->conn = $conn;
     }
-
-     // praginacija članova, radai da ako ima puno članova da se vide u stranicama po maksimalno 10 članova, trenutačno nepotrebno ali nek ostane
+         // praginacija članova, radai da ako ima puno članova da se vide u stranicama po maksimalno 10 članova, trenutačno nepotrebno ali nek ostane
     public function getAllMembers(int $page = 1, int $perPage = 10): array {
         $offset = ($page - 1) * $perPage;
         
         $stmt = $this->conn->prepare("
-            SELECT IDClan, Ime, Prezime, Tip, Email, role 
+            SELECT IDClan, Ime, Prezime, Email, role 
             FROM Clan 
             ORDER BY Prezime, Ime 
             LIMIT ? OFFSET ?
@@ -21,11 +20,10 @@ class ClanController {
         
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
-
     // Dohvaćanje člana po ID-u s dodatnom provjerom postojanja
     public function getMemberById(int $id): ?array {
         $stmt = $this->conn->prepare("
-            SELECT IDClan, Ime, Prezime, Tip, Email, role 
+            SELECT IDClan, Ime, Prezime, Email, role 
             FROM Clan 
             WHERE IDClan = ?
         ");
@@ -35,15 +33,12 @@ class ClanController {
         $result = $stmt->get_result()->fetch_assoc();
         return $result ?: null;
     }
-
     // Dodavanje novog člana s validacijom emaila i provjerom duplikata
     public function addMember(array $memberData): bool {
         try {
-            // Validacija osnovnih podataka
             if (empty($memberData['email']) || !filter_var($memberData['email'], FILTER_VALIDATE_EMAIL)) {
                 throw new Exception("Neispravan email format");
             }
-
             // Provjera postoji li email
             $checkStmt = $this->conn->prepare("SELECT IDClan FROM Clan WHERE Email = ?");
             $checkStmt->bind_param("s", $memberData['email']);
@@ -54,20 +49,19 @@ class ClanController {
 
             $stmt = $this->conn->prepare("
                 INSERT INTO Clan 
-                (Ime, Prezime, Tip, Email, Lozinka, role) 
-                VALUES (?, ?, ?, ?, ?, ?) // Dodan parametar za role
+                (Ime, Prezime, Email, Lozinka, role) 
+                VALUES (?, ?, ?, ?, ?)
             ");
             
             $hashedPassword = password_hash($memberData['lozinka'], PASSWORD_BCRYPT);
             
             $stmt->bind_param(
-                "ssssss", // Dodan dodatni 's' za role
+                "sssss",
                 $memberData['ime'],
                 $memberData['prezime'],
-                $memberData['tip'],
                 $memberData['email'],
                 $hashedPassword,
-                $memberData['role'] ?? 'user' // Omogućava postavljanje role
+                $memberData['role'] ?? 'user'
             );
             
             return $stmt->execute();
@@ -76,14 +70,12 @@ class ClanController {
             return false;
         }
     }
-
     // Ažuriranje člana s opcijom promjene lozinke
     public function updateMember(int $id, array $memberData): bool {
         try {
             $sql = "UPDATE Clan SET 
                     Ime = ?, 
                     Prezime = ?, 
-                    Tip = ?, 
                     Email = ? 
                     " . (isset($memberData['lozinka']) ? ", Lozinka = ?" : "") . "
                     WHERE IDClan = ?";
@@ -93,7 +85,6 @@ class ClanController {
             $params = [
                 $memberData['ime'],
                 $memberData['prezime'],
-                $memberData['tip'],
                 $memberData['email']
             ];
             
@@ -111,11 +102,9 @@ class ClanController {
             return false;
         }
     }
-
     // Brisanje člana s provjerom posudbi
     public function deleteMember(int $id): bool {
         try {
-            // Provjera ima li aktivnih posudbi
             $posudbeStmt = $this->conn->prepare("
                 SELECT COUNT(*) FROM Posudba 
                 WHERE ClanID = ? AND DatumVracanja IS NULL
@@ -138,7 +127,6 @@ class ClanController {
             return false;
         }
     }
-
     // Validirana promjena uloge
     public function changeRole(int $id, string $role): bool {
         try {

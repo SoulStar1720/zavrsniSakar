@@ -9,7 +9,6 @@ requireAdmin();
 $clanController = new ClanController($conn);
 $error = '';
 
-// Dohvati podatke člana za uređivanje
 $clan = null;
 if (isset($_GET['id'])) {
     $clan = $clanController->getMemberById((int)$_GET['id']);
@@ -26,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'ime' => trim($_POST['ime']),
         'prezime' => trim($_POST['prezime']),
         'email' => trim($_POST['email']),
-        'tip' => $_POST['tip'],
         'role' => $_POST['role'] ?? 'user',
         'id' => $clan['IDClan']
     ];
@@ -79,15 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                value="<?= htmlspecialchars($clan['Email']) ?>" required>
                     </div>
                     
-                    <div class="col-md-6">
-                        <label class="form-label">Tip člana</label>
-                        <select name="tip" class="form-select" required>
-                            <option value="student" <?= $clan['Tip'] === 'student' ? 'selected' : '' ?>>Student</option>
-                            <option value="profesor" <?= $clan['Tip'] === 'profesor' ? 'selected' : '' ?>>Profesor</option>
-                        </select>
-                    </div>
-                    
-                    <?php if ($_SESSION['user_role'] === 'admin')): ?>
+                    <?php if ($_SESSION['user_role'] === 'admin'): ?>
                     <div class="col-md-6">
                         <label class="form-label">Uloga</label>
                         <select name="role" class="form-select">

@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 /*
 // Sigurnosne postavke za sesije
 //Ovo pa sve nadalje su neeke sigurnosti ko za pravu stranicu 
