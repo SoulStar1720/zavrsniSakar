@@ -45,8 +45,11 @@ $posudbe = $posudbaController->getAllLoans();
                         <tbody>
                             <?php foreach ($posudbe as $posudba): ?>
                             <tr>
-                                <td><?= htmlspecialchars($posudba['Prezime'] . ' ' . htmlspecialchars($posudba['Ime']) ?></td>
-                                <td><?= htmlspecialchars($posudba['naslov']) ?> (ID: <?= htmlspecialchars($posudba['IDPrimjerak']) ?>)</td>
+                                <td><?= htmlspecialchars($posudba['Prezime'] . ' ' . htmlspecialchars($posudba['Ime'])) ?></td>
+                                <td>
+                                    <?= htmlspecialchars($posudba['naslov']) ?> 
+                                    (ID: <?= htmlspecialchars($posudba['IDPrimjerak']) ?>)
+                                </td>
                                 <td><?= htmlspecialchars($posudba['DatumPosudbe']) ?></td>
                                 <td>
                                     <span class="badge <?= $posudba['DatumVracanja'] ? 'bg-success' : 'bg-warning' ?>">

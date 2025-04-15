@@ -147,5 +147,10 @@ class ClanController {
             return false;
         }
     }
+    public function countMembers(): int {
+        $result = $this->conn->query("SELECT COUNT(*) AS total FROM Clan");
+        $row = $result->fetch_assoc();
+        return (int) $row['total'];
+    }
 }
 ?>

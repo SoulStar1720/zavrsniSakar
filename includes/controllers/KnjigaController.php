@@ -141,5 +141,10 @@ class KnjigaController {
         
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+    public function countBooks(): int {
+        $result = $this->conn->query("SELECT COUNT(*) AS total FROM VrstaLiterature");
+        $row = $result->fetch_assoc();
+        return (int) $row['total'];
+    }
 }
 ?>

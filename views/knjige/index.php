@@ -19,6 +19,7 @@ $total_pages = ceil($knjigaController->countBooks() / $per_page);
     <meta charset="UTF-8">
     <title>Upravljanje knjigama</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="container mt-4">
@@ -53,7 +54,7 @@ $total_pages = ceil($knjigaController->countBooks() / $per_page);
                                 <td><?= htmlspecialchars($knjiga['IDLiteratura']) ?></td>
                                 <td><?= htmlspecialchars($knjiga['naslov']) ?></td>
                                 <td><?= htmlspecialchars($knjiga['autor']) ?></td>
-                                <td><?= htmlspecialchars($knjiga['ISBN_broj']) ?></td>
+                                <td><?= htmlspecialchars($knjiga['ISBN_broj'] ?? 'N/A') ?></td>
                                 <td><?= htmlspecialchars($knjiga['izdavac']) ?></td>
                                 <td><?= htmlspecialchars($knjiga['broj_primjeraka']) ?></td>
                                 <td class="text-end">
@@ -91,8 +92,5 @@ $total_pages = ceil($knjigaController->countBooks() / $per_page);
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap ikone -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </body>
 </html>
