@@ -1,17 +1,21 @@
 <?php
-// Pokreni session samo ako već nije pokrenuta
-if (session_status() === PHP_SESSION_NONE) {
-    session_start([
-        'cookie_lifetime' => 86400, // 24h
-        'cookie_secure'   => !empty($_SERVER['HTTPS']),
-        'cookie_httponly' => true,
-        'use_strict_mode' => true
-    ]);
-}
+// header.php
 
-// Sigurnosni headeri
-header("X-Frame-Options: DENY");
-header("X-Content-Type-Options: nosniff");
+// Zaštita od duplog uključivanja
+if (!defined('HEADER_INCLUDED')) {
+    define('HEADER_INCLUDED', true);
+
+    // Session i sigurnosne postavke
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start([
+            'cookie_lifetime' => 86400,
+            'cookie_secure' => !empty($_SERVER['HTTPS']),
+            'cookie_httponly' => true,
+            'use_strict_mode' => true
+        ]);
+    }
+
+    ob_start(); // Output buffering
 ?>
 <!DOCTYPE html>
 <html lang="hr">
@@ -19,85 +23,86 @@ header("X-Content-Type-Options: nosniff");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sustav za knjižnicu</title>
-    
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         .navbar-brand {
             font-weight: 600;
             letter-spacing: 0.5px;
         }
-        .nav-link {
-            transition: all 0.3s ease;
+        .custom-search {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
         }
-        .nav-link:hover {
-            transform: translateY(-2px);
+        .custom-search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 2px solid #dee2e6;
+            outline: none;
+            transition: all 0.3s;
         }
-        .user-role-badge {
-            background: rgba(255,255,255,0.1);
-            padding: 5px 15px;
-            border-radius: 20px;
+        @media (max-width: 768px) {
+            .custom-search { max-width: 200px; }
+            .custom-search-input {
+                width: 40px;
+                padding-left: 35px;
+            }
+            .custom-search-input:focus {
+                width: 100%;
+                padding-left: 15px;
+            }
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="/zavrsniSakar/index.php">
+            <a class="navbar-brand" href="index.php">
                 <i class="bi bi-book-half me-2"></i>Knjižnica
             </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-           
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav me-auto">
-                  
-                </ul> 
-                
-                <div class="d-flex align-items-center">
-                    <?php if (isLoggedIn()): ?>
-                        <div class="text-light me-3">
-                            <i class="bi bi-person-circle me-2"></i>
-                            <span class="user-role-badge">
-                                <?= strtoupper($_SESSION['user_role'] ?? 'korisnik') ?>
-                            </span>
-                        </div>
-                        <a href="/zavrsniSakar/logout.php" class="btn btn-outline-light">
-                            <i class="bi bi-box-arrow-right me-1"></i>Odjava
-                        </a>
-                    <?php else: ?>
-                        <a href="/zavrsniSakar/login.php" class="btn btn-outline-light me-2">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Prijava
-                        </a>
-                        <a href="/zavrsniSakar/register.php" class="btn btn-light">
-                            <i class="bi bi-person-plus me-1"></i>Registracija
-                        </a>
-                    <?php endif; ?>
+            <div class="d-flex align-items-center">
+                <div class="custom-search me-3">
+                    <form action="search.php" method="GET">
+                        <input type="search" name="query" class="custom-search-input" placeholder="Pretraži...">
+                        <button type="submit" class="btn btn-link position-absolute end-0 top-50 translate-middle-y">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
                 </div>
+                <?php if (isLoggedIn()): ?>
+                    <a href="profile.php" class="btn btn-outline-light me-2">
+                        <i class="bi bi-person-circle"></i>
+                        <span class="d-none d-md-inline">Profil</span>
+                    </a>
+                    <a href="logout.php" class="btn btn-outline-light">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span class="d-none d-md-inline">Odjava</span>
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" class="btn btn-outline-light me-2">
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        <span class="d-none d-md-inline">Prijava</span>
+                    </a>
+                    <a href="register.php" class="btn btn-light">
+                        <i class="bi bi-person-plus"></i>
+                        <span class="d-none d-md-inline">Registracija</span>
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
-
-    <main class="main-content">
-        <div class="container mt-4">
-            <?php if (isset($_SESSION['success'])): ?>
-                <div class="alert alert-success alert-dismissible fade show">
-                    <?= htmlspecialchars($_SESSION['success']) ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                <?php unset($_SESSION['success']); ?>
-            <?php endif; ?>
-
-            <?php if (isset($_SESSION['error'])): ?>
-                <div class="alert alert-danger alert-dismissible fade show">
-                    <?= htmlspecialchars($_SESSION['error']) ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-                <?php unset($_SESSION['error']); ?>
-            <?php endif; ?>
+    <main class="container py-4">
+        <?php ob_end_flush(); ?>
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success"><?= $_SESSION['success'] ?></div>
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger"><?= $_SESSION['error'] ?></div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+<?php } // Zatvaranje if(!defined()) bloka ?>
