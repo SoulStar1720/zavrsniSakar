@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../../includes/auth.php';
-require_once __DIR__ . '/../../includes/db_connection.php';
-require_once __DIR__ . '/../includes/header.php';
+include('../../includes/auth.php');
+include('../../includes/db_connection.php');
+/*include('../../includes/header.php');*/
 requireAdmin();
 ?>
 
@@ -14,6 +14,10 @@ requireAdmin();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
+<a href="../../logout_admin.php" class="btn btn-outline-light">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span class="d-none d-md-inline">Odjava</span>
+                    </a>
     <div class="container mt-5">
         <div class="card shadow">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">

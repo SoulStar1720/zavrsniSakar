@@ -1,8 +1,4 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-/*
+<!--/*
 // Sigurnosne postavke za sesije
 //Ovo pa sve nadalje su neeke sigurnosti ko za pravu stranicu 
 ini_set('session.cookie_httponly', 1); //Onemogućava JavaScriptu pristup session cookie-u (npr. document.cookie neće vidjeti cookie).
@@ -18,7 +14,12 @@ if (!isset($_SESSION['initiated'])) {  //Generira novi ID sesije pri svakoj prij
 // Zaštita od XSS (Cross-Site Scripting) u ispisu podataka iz sesije
 function escapeSessionData($data) {                             //Sprječava XSS napade ako bi napadač uspio ubaciti štetni kod u podatke sesije.
     return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-}*/
+}*/-->
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 function isLoggedIn() {
     return isset($_SESSION['user_id']);
 }
@@ -35,12 +36,23 @@ function requireLogin() {
 }
 
 function requireAdmin() {
+    requireLogin();
     if (!isAdmin()) {
         header("HTTP/1.1 403 Forbidden");
         die("Nemate ovlaštenje za pristup ovoj stranici");
     }
 }
-/*služi za zaštitu od CSRF napada (Cross-Site Request Forgery).
+
+function redirectBasedOnRole() {
+    if (isAdmin()) {
+        header("Location: views/admin/index.php");
+    } else {
+        header("Location: profile.php");
+    }
+    exit();
+}
+?>
+<!--/*služi za zaštitu od CSRF napada (Cross-Site Request Forgery).
 function generateCsrfToken() {
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -50,5 +62,4 @@ function generateCsrfToken() {
 
 function validateCsrfToken($token) {
     return hash_equals($_SESSION['csrf_token'] ?? '', $token);
-}*/
-?>
+}*/-->

@@ -1,10 +1,15 @@
-<?php
-require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/db_connection.php';
-require_once __DIR__ . '/includes/header.php';
+<?php 
+include('includes/auth.php');
+include('includes/db_connection.php');
+include('includes/header.php');
 
 if (!isLoggedIn()) {
     header("Location: login.php");
+    exit();
+}
+
+if (isAdmin()) {
+    header("Location: admin/index.php");
     exit();
 }
 

@@ -4,7 +4,7 @@ require_once __DIR__ . '/includes/db_connection.php';
 require_once __DIR__ . '/includes/auth.php';
 
 if (isLoggedIn()) {
-    header("Location: index.php");
+    redirectBasedOnRole();
     exit();
 }
 
@@ -21,12 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($password, $user['Lozinka'])) {
         $_SESSION['user_id'] = $user['IDClan'];
         $_SESSION['user_role'] = $user['role'];
-        header("Location: index.php");
+        redirectBasedOnRole();
         exit();
     } else {
         $error = "Pogrešno korisničko ime ili lozinka";
     }
 }
+
+
 ?>
 
 <!DOCTYPE html>

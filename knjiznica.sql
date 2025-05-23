@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2025 at 09:46 AM
+-- Generation Time: Apr 29, 2025 at 08:34 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -86,7 +86,8 @@ INSERT INTO `clan` (`IDClan`, `Ime`, `Prezime`, `Email`, `Lozinka`, `role`) VALU
 (108, 'Luka', 'Kovačić', 'luka.kovačić108@knjiznica.hr', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user'),
 (109, 'Ivana', 'Milić', 'ivana.milić109@knjiznica.hr', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'user'),
 (1000, 'Dominik', 'Dusek', 'broooooooooo224424@gmail.com', '$2y$10$EEkQnHXKsiu1XAX31x59fuLK5y/r7efOYIx3zK6jEDXQCG/vhIjiK', 'user'),
-(1001, 'Lena', 'Sakar', 'sakarlena@gmail.com', '$2y$10$f1A0DozXQ4hB5SfrO3iQReGkLB/JVLFXBjpOQFjvW375VYdgCXLF6', 'admin');
+(1001, 'Lena', 'Sakar', 'sakarlena@gmail.com', '$2y$10$f1A0DozXQ4hB5SfrO3iQReGkLB/JVLFXBjpOQFjvW375VYdgCXLF6', 'admin'),
+(1003, 'Adrijana', 'Potužak', 'adre044@gmail.com', '$2y$10$ANUl/NoAtTTXAOSIlvO91OrY8xaZBY.Tf0Ili6t8wOBevQEU7nsKq', 'user');
 
 -- --------------------------------------------------------
 
@@ -401,7 +402,7 @@ ALTER TABLE `autor`
 -- AUTO_INCREMENT for table `clan`
 --
 ALTER TABLE `clan`
-  MODIFY `IDClan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1002;
+  MODIFY `IDClan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1004;
 
 --
 -- AUTO_INCREMENT for table `izdavac`
