@@ -1,7 +1,7 @@
 <?php
 include('../../includes/auth.php');
 include('../../includes/db_connection.php');
-/*include('../../includes/header.php');*/
+include('../../includes/header.php');
 requireAdmin();
 ?>
 
