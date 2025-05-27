@@ -61,11 +61,7 @@ if (!defined('HEADER_INCLUDED')) {
                     </form>
                 </div>
                 <?php if (isLoggedIn()): ?>
-                    <a href="profile.php" class="btn btn-outline-light me-2">
-                        <i class="bi bi-person-circle"></i>
-                        <span class="d-none d-md-inline">Profil</span>
-                    </a>
-                    <a href="logout.php" class="btn btn-outline-light">
+                    <a href="../../logout_admin.php" class="btn btn-outline-light">
                         <i class="bi bi-box-arrow-right"></i>
                         <span class="d-none d-md-inline">Odjava</span>
                     </a>

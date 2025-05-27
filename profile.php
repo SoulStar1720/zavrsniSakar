@@ -55,13 +55,9 @@ $posudbe = $stmtPosudbe->get_result()->fetch_all(MYSQLI_ASSOC);
                     <?= htmlspecialchars($user['Ime'] ?? 'Korisnik') ?>
                     <?= htmlspecialchars($user['Prezime'] ?? '') ?>
                 </h3>
-                <a href="logout.php" class="btn btn-light btn-sm">
-                    <i class="bi bi-box-arrow-right"></i> Odjava
-                </a>
             </div>
 
             <div class="card-body">
-                <!-- Točna kopija originalnog sadržaja -->
                 <div class="row g-4">
                     <div class="col-md-6">
                         <div class="card h-100 border-info">
