@@ -2,15 +2,14 @@
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db_connection.php';
 require_once __DIR__ . '/../../includes/header.php';
-require_once __DIR__ . '/../../includes/controllers/ClanController.php';
 
 requireAdmin();
 
-$clanController = new ClanController($conn);
 $error = '';
 
+// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $podaci = [
+    $memberData = [
         'ime' => trim($_POST['ime']),
         'prezime' => trim($_POST['prezime']),
         'email' => trim($_POST['email']),
@@ -19,12 +18,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     try {
-        if ($clanController->addMember($podaci)) {
+        // Validate email
+        if (empty($memberData['email']) || !filter_var($memberData['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Neispravan email format");
+        }
+
+        // Check if email already exists
+        $checkStmt = $conn->prepare("SELECT IDClan FROM Clan WHERE Email = ?");
+        $checkStmt->bind_param("s", $memberData['email']);
+        $checkStmt->execute();
+        if ($checkStmt->get_result()->num_rows > 0) {
+            throw new Exception("Email već postoji u sustavu");
+        }
+
+        // Prepare insert statement
+        $stmt = $conn->prepare("
+            INSERT INTO Clan 
+            (Ime, Prezime, Email, Lozinka, role) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+
+        // Hash the password
+        $hashedPassword = password_hash($memberData['lozinka'], PASSWORD_BCRYPT);
+
+        // Ensure all required fields are set
+        $ime = $memberData['ime'] ?? null;
+        $prezime = $memberData['prezime'] ?? null;
+        $email = $memberData['email'] ?? null;
+        $role = $memberData['role'] ?? 'user'; // Default to 'user'
+
+        // Check for null values
+        if (is_null($ime) || is_null($prezime) || is_null($email) || is_null($hashedPassword)) {
+            throw new Exception("Sva polja su obavezna");
+        }
+
+        // Bind parameters
+        $stmt->bind_param("sssss", $ime, $prezime, $email, $hashedPassword, $role);
+        
+        // Execute the statement
+        if ($stmt->execute()) {
             $_SESSION['success'] = "Član uspješno dodan!";
             header("Location: index.php");
             exit();
+        } else {
+            throw new Exception("Greška pri dodavanju člana");
         }
+    } catch (mysqli_sql_exception $e) {
+        error_log("Greška pri dodavanju člana: " . $e->getMessage());
+        $error = "Greška pri dodavanju člana: " . $e->getMessage();
     } catch (Exception $e) {
+        error_log("Greška: " . $e->getMessage());
         $error = $e->getMessage();
     }
 }
@@ -88,3 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
+
+<?php
+// Close the database connection
+$conn->close();
+?>

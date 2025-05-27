@@ -1,143 +1,127 @@
 <?php
-class PosudbaController {
-    private $conn;
+// Database connection
+$conn = mysqli_connect('localhost', 'root', '', 'knjiznica');
 
-    public function __construct(mysqli $conn) {
-        $this->conn = $conn;
-    }
+if (!$conn) {
+    die("Greška pri spajanju na bazu: " . mysqli_connect_error());
+}
 
-    // Dohvaćanje svih posudbi s detaljima
-    public function getAllLoans(int $page = 1, int $perPage = 10): array {
-        $offset = ($page - 1) * $perPage;
-        
-        $stmt = $this->conn->prepare("
-            SELECT p.PosudbaID, c.Ime, c.Prezime, 
-                   v.naslov, p.DatumPosudbe, p.DatumVracanja,
-                   pr.IDPrimjerak, a.ImePrezime AS autor
-            FROM Posudba p
-            JOIN Clan c ON p.ClanID = c.IDClan
-            JOIN Primjerak pr ON p.PrimjerakID = pr.IDPrimjerak
-            JOIN VrstaLiterature v ON pr.LiteraturaID = v.IDLiteratura
-            JOIN Autor a ON v.AutorID = a.AutorID
-            ORDER BY p.DatumPosudbe DESC
-            LIMIT ? OFFSET ?
-        ");
-        $stmt->bind_param("ii", $perPage, $offset);
-        $stmt->execute();
-        
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
+mysqli_set_charset($conn, "utf8");
 
-    // Kreiranje posudbe s transakcijom i provjerama
-    public function createLoan(int $clanID, int $primjerakID): bool {
-        try {
-            $this->conn->begin_transaction();
+// Pagination settings
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$perPage = 10;
+$offset = ($page - 1) * $perPage;
 
-            // Provjeri valjanost ID-jeva
-            $this->validateIds($clanID, $primjerakID);
+// Get all loans with details
+$stmt = $conn->prepare("
+    SELECT p.PosudbaID, c.Ime, c.Prezime, 
+           v.naslov, p.DatumPosudbe, p.DatumVracanja,
+           pr.IDPrimjerak, a.ImePrezime AS autor
+    FROM Posudba p
+    JOIN Clan c ON p.ClanID = c.IDClan
+    JOIN Primjerak pr ON p.PrimjerakID = pr.IDPrimjerak
+    JOIN VrstaLiterature v ON pr.LiteraturaID = v.IDLiteratura
+    JOIN Autor a ON v.AutorID = a.AutorID
+    ORDER BY p.DatumPosudbe DESC
+    LIMIT ? OFFSET ?
+");
+$stmt->bind_param("ii", $perPage, $offset);
+$stmt->execute();
+$posudbe = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-            // Provjeri dostupnost primjerka
-            $dostupno = $this->checkAvailability($primjerakID);
-            if ($dostupno !== 'dostupno') {
-                throw new Exception("Primjerak nije dostupan");
-            }
+// Create a new loan
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'create') {
+    $clanID = (int)$_POST['clanID'];
+    $primjerakID = (int)$_POST['primjerakID'];
 
-            // Kreiraj posudbu
-            $stmtInsert = $this->conn->prepare("
-                INSERT INTO Posudba (ClanID, PrimjerakID, DatumPosudbe)
-                VALUES (?, ?, CURDATE())
-            ");
-            $stmtInsert->bind_param("ii", $clanID, $primjerakID);
-            $stmtInsert->execute();
-
-            // Ažuriraj status primjerka
-            $this->updatePrimjerakStatus($primjerakID, 'posuđeno');
-
-            $this->conn->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->conn->rollback();
-            error_log("Greška pri posudbi: " . $e->getMessage());
-            return false;
+    try {
+        // Validate IDs
+        if (empty($clanID) || empty($primjerakID)) {
+            throw new InvalidArgumentException("Član ID i Primjerak ID moraju biti navedeni.");
         }
-    }
 
-    // Vraćanje posudbe s transakcijom
-    public function returnLoan(int $posudbaID): bool {
-        try {
-            $this->conn->begin_transaction();
-
-            // Dohvati primjerakID prije brisanja
-            $primjerakID = $this->getPrimjerakId($posudbaID);
-
-            // Ažuriraj datum vraćanja
-            $stmt = $this->conn->prepare("
-                UPDATE Posudba 
-                SET DatumVracanja = CURDATE() 
-                WHERE PosudbaID = ?
-            ");
-            $stmt->bind_param("i", $posudbaID);
-            $stmt->execute();
-
-            // Ažuriraj status primjerka
-            $this->updatePrimjerakStatus($primjerakID, 'dostupno');
-
-            $this->conn->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->conn->rollback();
-            error_log("Greška pri vraćanju: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Privatne metode za validaciju
-    private function validateIds(int $clanID, int $primjerakID): void {
-        // Provjera postoji li član
-        $stmtClan = $this->conn->prepare("SELECT IDClan FROM Clan WHERE IDClan = ?");
+        // Validate member ID
+        $stmtClan = $conn->prepare("SELECT IDClan FROM Clan WHERE IDClan = ?");
         $stmtClan->bind_param("i", $clanID);
         $stmtClan->execute();
         if ($stmtClan->get_result()->num_rows === 0) {
             throw new Exception("Nevažeći ID člana");
         }
 
-        // Provjera postoji li primjerak
-        $stmtPrim = $this->conn->prepare("SELECT IDPrimjerak FROM Primjerak WHERE IDPrimjerak = ?");
-        $stmtPrim->bind_param("i", $primjerakID);
-        $stmtPrim->execute();
-        if ($stmtPrim->get_result()->num_rows === 0) {
-            throw new Exception("Nevažeći ID primjerka");
-        }
-    }
-
-    private function checkAvailability(int $primjerakID): string {
-        $stmt = $this->conn->prepare("
+        // Validate copy availability
+        $stmtAvailability = $conn->prepare("
             SELECT Dostupno FROM Primjerak WHERE IDPrimjerak = ?
         ");
-        $stmt->bind_param("i", $primjerakID);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_assoc()['Dostupno'] ?? 'nepoznato';
-    }
+        $stmtAvailability->bind_param("i", $primjerakID);
+        $stmtAvailability->execute();
+        $availability = $stmtAvailability->get_result()->fetch_assoc()['Dostupno'] ?? 'nepoznato';
+        if ($availability !== 'dostupno') {
+            throw new Exception("Primjerak nije dostupan");
+        }
 
-    private function updatePrimjerakStatus(int $primjerakID, string $status): void {
-        $stmt = $this->conn->prepare("
+        // Create loan
+        $stmtInsert = $conn->prepare("
+            INSERT INTO Posudba (ClanID, PrimjerakID, DatumPosudbe)
+            VALUES (?, ?, CURDATE())
+        ");
+        $stmtInsert->bind_param("ii", $clanID, $primjerakID);
+        $stmtInsert->execute();
+
+        // Update copy status
+        $stmtUpdate = $conn->prepare("
             UPDATE Primjerak 
-            SET Dostupno = ?, ClanID = NULL, DatumPosudbe = NULL
+            SET Dostupno = 'posuđeno', ClanID = ?, DatumPosudbe = CURDATE()
             WHERE IDPrimjerak = ?
         ");
-        $statusValue = ($status === 'posuđeno') ? 'posuđeno' : 'dostupno';
-        $stmt->bind_param("si", $statusValue, $primjerakID);
-        $stmt->execute();
-    }
+        $stmtUpdate->bind_param("ii", $clanID, $primjerakID);
+        $stmtUpdate->execute();
 
-    private function getPrimjerakId(int $posudbaID): int {
-        $stmt = $this->conn->prepare("
-            SELECT PrimjerakID FROM Posudba WHERE PosudbaID = ?
-        ");
-        $stmt->bind_param("i", $posudbaID);
-        $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
-        return $result['PrimjerakID'] ?? 0;
+        echo "Knjiga uspješno posuđena!";
+    } catch (mysqli_sql_exception $e) {
+        error_log("Greška pri posudbi: " . $e->getMessage());
+    } catch (Exception $e) {
+        error_log("Greška: " . $e->getMessage());
     }
 }
+
+// Return a loan
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'return') {
+    $posudbaID = (int)$_POST['posudbaID'];
+
+    try {
+        // Get copy ID before returning
+        $stmtPrimjerakID = $conn->prepare("
+            SELECT PrimjerakID FROM Posudba WHERE PosudbaID = ?
+        ");
+        $stmtPrimjerakID->bind_param("i", $posudbaID);
+        $stmtPrimjerakID->execute();
+        $primjerakID = $stmtPrimjerakID->get_result()->fetch_assoc()['PrimjerakID'] ?? 0;
+
+        // Update return date
+        $stmtReturn = $conn->prepare("
+            UPDATE Posudba 
+            SET DatumVracanja = CURDATE() 
+            WHERE PosudbaID = ?
+        ");
+        $stmtReturn->bind_param("i", $posudbaID);
+        $stmtReturn->execute();
+
+        // Update copy status
+        $stmtUpdate = $conn->prepare("
+            UPDATE Primjerak 
+            SET Dostupno = 'dostupno', ClanID = NULL, DatumPosudbe = NULL
+            WHERE IDPrimjerak = ?
+        ");
+        $stmtUpdate->bind_param("i", $primjerakID);
+        $stmtUpdate->execute();
+
+        echo "Knjiga je uspješno vraćena!";
+    } catch (mysqli_sql_exception $e) {
+        error_log("Greška pri vraćanju: " . $e->getMessage());
+    }
+}
+
+// Close the connection
+$conn->close();
 ?>
