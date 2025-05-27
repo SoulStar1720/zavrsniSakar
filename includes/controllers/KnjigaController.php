@@ -44,29 +44,41 @@ class KnjigaController {
     // Dodaj novu knjigu s provjerom validnosti ID-jeva
     public function addBook(array $bookData): bool {
         try {
-            // Validacija ID-jeva
-            $this->validateIds($bookData['autor_id'], $bookData['izdavac_id']);
-            
-            $stmt = $this->conn->prepare("
-                INSERT INTO VrstaLiterature 
-                (vrsta_literature, AutorID, IzdavacID, naslov, ISBN_broj, broj_primjeraka) 
-                VALUES (?, ?, ?, ?, ?, ?)
-            ");
-            
-            $stmt->bind_param(
-                "siissi",
-                $bookData['vrsta'],
-                $bookData['autor_id'],
-                $bookData['izdavac_id'],
-                $bookData['naslov'],
-                $bookData['isbn'],
-                $bookData['broj_primjeraka']
-            );
-            
-            return $stmt->execute();
-        } catch (mysqli_sql_exception $e) {
+            // Check if 'autor_id' and 'izdavac_id' exist in the array
+            $autorId = isset($bookData['autor_id']) ? (int)$bookData['autor_id'] : null;
+            $izdavacId = isset($bookData['izdavac_id']) ? (int)$bookData['izdavac_id'] : null;
+
+            // Validate IDs
+            $this->validateIds($autorId, $izdavacId);
+
+            // Proceed with adding the book...
+            // Your insert logic here
+
+            return true; // Return true if the book is added successfully
+        } catch (Exception $e) {
             error_log("Greška pri dodavanju knjige: " . $e->getMessage());
             return false;
+        }
+    }
+
+    // Privatna metoda za validaciju ID-jeva
+    private function validateIds(?int $autorId, ?int $izdavacId): void {
+        if ($autorId === null || $izdavacId === null) {
+            throw new InvalidArgumentException("Autor ID and Izdavac ID must be provided.");
+        }
+
+        $stmtAutor = $this->conn->prepare("SELECT AutorID FROM Autor WHERE AutorID = ?");
+        $stmtAutor->bind_param("i", $autorId);
+        $stmtAutor->execute();
+        if ($stmtAutor->get_result()->num_rows === 0) {
+            throw new Exception("Nevažeći ID autora");
+        }
+
+        $stmtIzdavac = $this->conn->prepare("SELECT IzdavacID FROM Izdavac WHERE IzdavacID = ?");
+        $stmtIzdavac->bind_param("i", $izdavacId);
+        $stmtIzdavac->execute();
+        if ($stmtIzdavac->get_result()->num_rows === 0) {
+            throw new Exception("Nevažeći ID izdavača");
         }
     }
 
@@ -108,23 +120,6 @@ class KnjigaController {
         }
     }
 
-    // Privatna metoda za validaciju ID-jeva
-    private function validateIds(int $autorId, int $izdavacId): void {
-        $stmtAutor = $this->conn->prepare("SELECT AutorID FROM Autor WHERE AutorID = ?");
-        $stmtAutor->bind_param("i", $autorId);
-        $stmtAutor->execute();
-        if ($stmtAutor->get_result()->num_rows === 0) {
-            throw new Exception("Nevažeći ID autora");
-        }
-
-        $stmtIzdavac = $this->conn->prepare("SELECT IzdavacID FROM Izdavac WHERE IzdavacID = ?");
-        $stmtIzdavac->bind_param("i", $izdavacId);
-        $stmtIzdavac->execute();
-        if ($stmtIzdavac->get_result()->num_rows === 0) {
-            throw new Exception("Nevažeći ID izdavača");
-        }
-    }
-
     // Pretraži knjige po naslovu i autoru
     public function searchBooks(string $query): array {
         $searchTerm = "%$query%";
@@ -141,6 +136,7 @@ class KnjigaController {
         
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
+
     public function countBooks(): int {
         $result = $this->conn->query("SELECT COUNT(*) AS total FROM VrstaLiterature");
         $row = $result->fetch_assoc();

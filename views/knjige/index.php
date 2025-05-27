@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db_connection.php';
-require_once __DIR__ . '/../../includes/header.php';
+require_once __DIR__ . '/../../includes/header_admin.php';
 require_once __DIR__ . '/../../includes/controllers/KnjigaController.php';
 
 requireAdmin();

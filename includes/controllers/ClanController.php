@@ -35,41 +35,54 @@ class ClanController {
     }
     // Dodavanje novog člana s validacijom emaila i provjerom duplikata
     public function addMember(array $memberData): bool {
-        try {
-            if (empty($memberData['email']) || !filter_var($memberData['email'], FILTER_VALIDATE_EMAIL)) {
-                throw new Exception("Neispravan email format");
-            }
-            // Provjera postoji li email
-            $checkStmt = $this->conn->prepare("SELECT IDClan FROM Clan WHERE Email = ?");
-            $checkStmt->bind_param("s", $memberData['email']);
-            $checkStmt->execute();
-            if ($checkStmt->get_result()->num_rows > 0) {
-                throw new Exception("Email već postoji u sustavu");
-            }
-
-            $stmt = $this->conn->prepare("
-                INSERT INTO Clan 
-                (Ime, Prezime, Email, Lozinka, role) 
-                VALUES (?, ?, ?, ?, ?)
-            ");
-            
-            $hashedPassword = password_hash($memberData['lozinka'], PASSWORD_BCRYPT);
-            
-            $stmt->bind_param(
-                "sssss",
-                $memberData['ime'],
-                $memberData['prezime'],
-                $memberData['email'],
-                $hashedPassword,
-                $memberData['role'] ?? 'user'
-            );
-            
-            return $stmt->execute();
-        } catch (mysqli_sql_exception $e) {
-            error_log("Greška pri dodavanju člana: " . $e->getMessage());
-            return false;
+    try {
+        // Validate email
+        if (empty($memberData['email']) || !filter_var($memberData['email'], FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Neispravan email format");
         }
+
+        // Check if email already exists
+        $checkStmt = $this->conn->prepare("SELECT IDClan FROM Clan WHERE Email = ?");
+        $checkStmt->bind_param("s", $memberData['email']);
+        $checkStmt->execute();
+        if ($checkStmt->get_result()->num_rows > 0) {
+            throw new Exception("Email već postoji u sustavu");
+        }
+
+        // Prepare insert statement
+        $stmt = $this->conn->prepare("
+            INSERT INTO Clan 
+            (Ime, Prezime, Email, Lozinka, role) 
+            VALUES (?, ?, ?, ?, ?)
+        ");
+
+        // Hash the password
+        $hashedPassword = password_hash($memberData['lozinka'], PASSWORD_BCRYPT);
+
+        // Ensure all required fields are set
+        $ime = $memberData['ime'] ?? null;
+        $prezime = $memberData['prezime'] ?? null;
+        $email = $memberData['email'] ?? null;
+        $role = $memberData['role'] ?? 'user'; // Default to 'user'
+
+        // Check for null values
+        if (is_null($ime) || is_null($prezime) || is_null($email) || is_null($hashedPassword)) {
+            throw new Exception("Sva polja su obavezna");
+        }
+
+        // Bind parameters
+        $stmt->bind_param("sssss", $ime, $prezime, $email, $hashedPassword, $role);
+        
+        return $stmt->execute();
+    } catch (mysqli_sql_exception $e) {
+        error_log("Greška pri dodavanju člana: " . $e->getMessage());
+        return false;
+    } catch (Exception $e) {
+        error_log("Greška: " . $e->getMessage());
+        return false;
     }
+}
+
     // Ažuriranje člana s opcijom promjene lozinke
     public function updateMember(int $id, array $memberData): bool {
         try {
