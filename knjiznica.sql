@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 29, 2025 at 08:34 AM
+-- Generation Time: May 27, 2025 at 01:32 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -125,55 +125,77 @@ INSERT INTO `izdavac` (`IzdavacID`, `Naziv`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `knjige`
+--
+
+CREATE TABLE `knjige` (
+  `IDKnjiga` int(11) NOT NULL,
+  `naslov` varchar(100) NOT NULL,
+  `AutorID` int(11) NOT NULL,
+  `IzdavacID` int(11) NOT NULL,
+  `VrstaID` int(11) NOT NULL,
+  `ISBN_broj` varchar(20) DEFAULT NULL,
+  `broj_primjeraka` int(11) NOT NULL DEFAULT 1,
+  `naslovnica` varchar(255) DEFAULT NULL,
+  `godina_izdanja` int(4) DEFAULT NULL,
+  `opis` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `knjige`
+--
+
+INSERT INTO `knjige` (`IDKnjiga`, `naslov`, `AutorID`, `IzdavacID`, `VrstaID`, `ISBN_broj`, `broj_primjeraka`, `naslovnica`, `godina_izdanja`, `opis`) VALUES
+(1, 'The Art of Computer Programming', 1, 1, 1, '978-0-201-03804-2', 3, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/TheArtofComputerProgramming.png', 1968, 'Fundamentalno djelo o računalnom programiranju'),
+(2, 'A Brief History of Time', 2, 2, 1, '978-0-553-17521-9', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/ABriefHistoryofTime.png', 1988, 'Popularno-znanstveno djelo o kozmologiji'),
+(3, 'Mathematical Statistics', 3, 3, 2, '9780134080918', 1, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/MathematicalStatistics.jpg', 2015, 'Udžbenik matematičke statistike'),
+(4, '1984', 7, 7, 6, '978-0-452-28423-4', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/1984.jpg', 1949, 'Distopijski klasik Georgea Orwella'),
+(5, 'Harry Potter and the Sorcerer\'s Stone', 9, 9, 6, '978-0-545-01022-1', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/HarryPotterandPhilosoferStone.jpg', 1997, 'Prvi dio serijala o Harryju Potteru'),
+(6, 'Ponos i predrasude', 10, 10, 6, '978-953-7396-48-9', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/PonosiiPredrasude.jpeg', 1813, 'Klasični roman Jane Austen'),
+(7, 'Murder on the Orient Express', 17, 15, 10, '978-0062073501', 3, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/MurderontheOrientExpress.jpg', 1934, 'Kriminalistički roman Agathe Christie'),
+(8, 'Sapiens: A Brief History of Humankind', 18, 16, 11, '978-0062316097', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/SapiensABriefHistoryofHumankind.png', 2011, 'Povijest ljudske vrste'),
+(9, 'Design Patterns: Elements of Reusable Object-Oriented Software', 12, 1, 8, '978-0201633610', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/design_patterns.jpg', 1994, 'Klasično djelo o softverskim dizajn uzorcima'),
+(10, 'National Geographic Encyclopedia', 8, 8, 7, '978-1-4262-1300-0', 6, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/natgeo_encyclopedia.jpg', 2013, 'Opsežna enciklopedija National Geographica'),
+(11, 'Priče iz davnine', 13, 11, 9, '978-953-6747-00-8', 2, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/price_iz_davnine.jpg', 1916, 'Zbirka hrvatskih narodnih pripovijedaka'),
+(12, 'The Cambridge Encyclopedia of Language', 11, 6, 7, '978-0521736503', 3, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/cambridge_language.jpg', 2010, 'Opsežna enciklopedija o jeziku i lingvistici'),
+(13, 'Watchmen', 16, 14, 12, '978-0930289232', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/Watchmen.jpg', 1986, 'Kultni strip o superherojima s dubokom filozofskom podlogom');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `posudba`
 --
 
 CREATE TABLE `posudba` (
-  `PosudbaID` int(11) NOT NULL,
-  `ClanID` int(11) NOT NULL,
+  `IDPosudba` int(11) NOT NULL,
   `PrimjerakID` int(11) NOT NULL,
-  `DatumPosudbe` date DEFAULT curdate(),
-  `DatumVracanja` date DEFAULT NULL
+  `ClanID` int(11) NOT NULL,
+  `DatumPosudbe` datetime NOT NULL DEFAULT current_timestamp(),
+  `DatumVracanja` datetime DEFAULT NULL,
+  `RokVracanja` datetime DEFAULT NULL,
+  `status` enum('aktivna','vraćeno','kasni','otkazano') NOT NULL DEFAULT 'aktivna',
+  `napomena` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `posudba`
 --
 
-INSERT INTO `posudba` (`PosudbaID`, `ClanID`, `PrimjerakID`, `DatumPosudbe`, `DatumVracanja`) VALUES
-(1, 101, 201, '2024-01-10', NULL),
-(2, 103, 202, '2024-01-12', NULL),
-(3, 102, 204, '2024-01-05', NULL),
-(4, 105, 209, '2024-01-03', NULL),
-(5, 104, 210, '2024-01-08', NULL),
-(6, 103, 214, '2024-01-15', NULL),
-(7, 102, 215, '2024-01-16', NULL),
-(8, 101, 220, '2024-03-10', NULL),
-(9, 103, 221, '2024-03-11', NULL),
-(10, 102, 223, '2024-03-12', NULL),
-(11, 104, 225, '2024-03-13', NULL),
-(12, 101, 226, '2024-04-01', NULL),
-(13, 103, 231, '2024-04-02', NULL),
-(14, 105, 235, '2024-04-03', '2024-04-17'),
-(15, 107, 240, '2024-04-05', NULL),
-(16, 102, 263, '2024-05-01', '2025-04-15'),
-(17, 104, 268, '2024-05-03', '2024-05-17'),
-(18, 106, 277, '2024-05-05', NULL),
-(19, 108, 284, '2024-05-07', NULL);
-
---
--- Triggers `posudba`
---
-DELIMITER $$
-CREATE TRIGGER `posudba_after_insert` AFTER INSERT ON `posudba` FOR EACH ROW BEGIN
-  UPDATE Primjerak 
-  SET Dostupno = 'posuđeno', 
-      DatumPosudbe = NEW.DatumPosudbe, 
-      ClanID = NEW.ClanID 
-  WHERE IDPrimjerak = NEW.PrimjerakID;
-END
-$$
-DELIMITER ;
+INSERT INTO `posudba` (`IDPosudba`, `PrimjerakID`, `ClanID`, `DatumPosudbe`, `DatumVracanja`, `RokVracanja`, `status`, `napomena`) VALUES
+(1, 1, 101, '2024-01-10 10:00:00', NULL, '2024-02-09 10:00:00', 'aktivna', NULL),
+(2, 2, 103, '2024-01-12 11:30:00', NULL, '2024-02-11 11:30:00', 'aktivna', NULL),
+(3, 4, 102, '2024-01-05 14:15:00', NULL, '2024-02-04 14:15:00', 'aktivna', NULL),
+(4, 7, 105, '2024-01-03 09:45:00', NULL, '2024-02-02 09:45:00', 'vraćeno', NULL),
+(5, 8, 101, '2024-03-10 16:20:00', NULL, '2024-04-09 16:20:00', 'aktivna', NULL),
+(6, 9, 103, '2024-03-11 13:10:00', NULL, '2024-04-10 13:10:00', 'aktivna', NULL),
+(7, 11, 103, '2024-01-15 10:30:00', NULL, '2024-02-14 10:30:00', 'aktivna', NULL),
+(8, 12, 102, '2024-01-16 15:45:00', NULL, '2024-02-15 15:45:00', 'aktivna', NULL),
+(9, 14, 106, '2024-05-05 12:00:00', NULL, '2024-06-04 12:00:00', 'aktivna', NULL),
+(10, 15, 108, '2024-05-07 14:30:00', NULL, '2024-06-06 14:30:00', 'aktivna', NULL),
+(11, 16, 104, '2024-06-01 10:00:00', NULL, '2024-07-01 10:00:00', 'aktivna', NULL),
+(12, 24, 107, '2024-05-15 14:30:00', NULL, '2024-06-14 14:30:00', 'aktivna', NULL),
+(13, 27, 108, '2024-05-20 11:15:00', NULL, '2024-06-19 11:15:00', 'aktivna', NULL),
+(14, 28, 102, '2024-05-22 16:45:00', NULL, '2024-06-21 16:45:00', 'aktivna', NULL);
 
 -- --------------------------------------------------------
 
@@ -182,159 +204,112 @@ DELIMITER ;
 --
 
 CREATE TABLE `primjerak` (
-  `LiteraturaID` int(11) NOT NULL,
   `IDPrimjerak` int(11) NOT NULL,
+  `KnjigaID` int(11) NOT NULL,
+  `inventarni_broj` varchar(20) NOT NULL,
   `DatumPosudbe` date DEFAULT NULL,
+  `DatumVracanja` date DEFAULT NULL,
   `ClanID` int(11) DEFAULT NULL,
-  `Dostupno` enum('dostupno','posuđeno') DEFAULT NULL
+  `status` enum('dostupno','posuđeno','rezervirano','na popravku','izgubljeno') DEFAULT 'dostupno',
+  `napomena` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `primjerak`
 --
 
-INSERT INTO `primjerak` (`LiteraturaID`, `IDPrimjerak`, `DatumPosudbe`, `ClanID`, `Dostupno`) VALUES
-(1, 201, '2024-01-10', 101, 'posuđeno'),
-(1, 202, '2024-01-12', 103, 'posuđeno'),
-(1, 203, NULL, NULL, 'dostupno'),
-(2, 204, '2024-01-05', 102, 'posuđeno'),
-(2, 205, NULL, NULL, 'dostupno'),
-(2, 206, NULL, NULL, 'dostupno'),
-(2, 207, NULL, NULL, 'dostupno'),
-(2, 208, NULL, NULL, 'dostupno'),
-(3, 209, '2024-01-03', 105, 'posuđeno'),
-(4, 210, '2024-01-08', 104, 'posuđeno'),
-(4, 211, NULL, NULL, 'dostupno'),
-(4, 212, NULL, NULL, 'dostupno'),
-(5, 213, NULL, NULL, 'dostupno'),
-(5, 214, '2024-01-15', 103, 'posuđeno'),
-(6, 215, '2024-01-16', 102, 'posuđeno'),
-(6, 216, NULL, NULL, 'dostupno'),
-(6, 217, NULL, NULL, 'dostupno'),
-(6, 218, NULL, NULL, 'dostupno'),
-(7, 219, NULL, NULL, 'dostupno'),
-(7, 220, '2024-03-10', 101, 'posuđeno'),
-(7, 221, '2024-03-11', 103, 'posuđeno'),
-(8, 222, NULL, NULL, 'dostupno'),
-(8, 223, '2024-03-12', 102, 'posuđeno'),
-(9, 224, NULL, NULL, 'dostupno'),
-(9, 225, '2024-03-13', 104, 'posuđeno'),
-(10, 226, NULL, NULL, 'dostupno'),
-(10, 227, NULL, NULL, 'dostupno'),
-(10, 228, NULL, NULL, 'dostupno'),
-(10, 229, NULL, NULL, 'dostupno'),
-(11, 230, NULL, NULL, 'dostupno'),
-(11, 231, NULL, NULL, 'dostupno'),
-(12, 232, NULL, NULL, 'dostupno'),
-(12, 233, NULL, NULL, 'dostupno'),
-(12, 234, NULL, NULL, 'dostupno'),
-(13, 235, NULL, NULL, 'dostupno'),
-(13, 236, NULL, NULL, 'dostupno'),
-(13, 237, NULL, NULL, 'dostupno'),
-(13, 238, NULL, NULL, 'dostupno'),
-(13, 239, NULL, NULL, 'dostupno'),
-(14, 240, NULL, NULL, 'dostupno'),
-(14, 241, NULL, NULL, 'dostupno'),
-(15, 242, NULL, NULL, 'dostupno'),
-(15, 243, NULL, NULL, 'dostupno'),
-(15, 244, NULL, NULL, 'dostupno'),
-(16, 245, NULL, NULL, 'dostupno'),
-(16, 246, NULL, NULL, 'dostupno'),
-(16, 247, NULL, NULL, 'dostupno'),
-(16, 248, NULL, NULL, 'dostupno'),
-(16, 249, NULL, NULL, 'dostupno'),
-(16, 250, NULL, NULL, 'dostupno'),
-(17, 251, NULL, NULL, 'dostupno'),
-(17, 252, NULL, NULL, 'dostupno'),
-(17, 253, NULL, NULL, 'dostupno'),
-(17, 254, NULL, NULL, 'dostupno'),
-(18, 255, NULL, NULL, 'dostupno'),
-(18, 256, NULL, NULL, 'dostupno'),
-(18, 257, NULL, NULL, 'dostupno'),
-(19, 258, NULL, NULL, 'dostupno'),
-(19, 259, NULL, NULL, 'dostupno'),
-(19, 260, NULL, NULL, 'dostupno'),
-(19, 261, NULL, NULL, 'dostupno'),
-(19, 262, NULL, NULL, 'dostupno'),
-(20, 263, NULL, NULL, 'dostupno'),
-(20, 264, NULL, NULL, 'dostupno'),
-(21, 265, NULL, NULL, 'dostupno'),
-(21, 266, NULL, NULL, 'dostupno'),
-(21, 267, NULL, NULL, 'dostupno'),
-(22, 268, NULL, NULL, 'dostupno'),
-(22, 269, NULL, NULL, 'dostupno'),
-(22, 270, NULL, NULL, 'dostupno'),
-(22, 271, NULL, NULL, 'dostupno'),
-(23, 272, NULL, NULL, 'dostupno'),
-(23, 273, NULL, NULL, 'dostupno'),
-(24, 274, NULL, NULL, 'dostupno'),
-(24, 275, NULL, NULL, 'dostupno'),
-(24, 276, NULL, NULL, 'dostupno'),
-(25, 277, NULL, NULL, 'dostupno'),
-(25, 278, NULL, NULL, 'dostupno'),
-(25, 279, NULL, NULL, 'dostupno'),
-(26, 280, NULL, NULL, 'dostupno'),
-(26, 281, NULL, NULL, 'dostupno'),
-(26, 282, NULL, NULL, 'dostupno'),
-(26, 283, NULL, NULL, 'dostupno'),
-(27, 284, NULL, NULL, 'dostupno'),
-(27, 285, NULL, NULL, 'dostupno'),
-(28, 286, NULL, NULL, 'dostupno'),
-(28, 287, NULL, NULL, 'dostupno'),
-(28, 288, NULL, NULL, 'dostupno'),
-(29, 289, NULL, NULL, 'dostupno'),
-(29, 290, NULL, NULL, 'dostupno');
+INSERT INTO `primjerak` (`IDPrimjerak`, `KnjigaID`, `inventarni_broj`, `DatumPosudbe`, `DatumVracanja`, `ClanID`, `status`, `napomena`) VALUES
+(1, 1, 'INV-001', '2024-01-10', NULL, 101, 'posuđeno', NULL),
+(2, 1, 'INV-002', '2024-01-12', NULL, 103, 'posuđeno', NULL),
+(3, 1, 'INV-003', NULL, NULL, NULL, 'dostupno', NULL),
+(4, 2, 'INV-004', '2024-01-05', NULL, 102, 'posuđeno', NULL),
+(5, 2, 'INV-005', NULL, NULL, NULL, 'dostupno', NULL),
+(6, 2, 'INV-006', NULL, NULL, NULL, 'dostupno', NULL),
+(7, 3, 'INV-007', '2024-01-03', NULL, 105, 'posuđeno', NULL),
+(8, 4, 'INV-008', '2024-03-10', NULL, 101, 'posuđeno', NULL),
+(9, 4, 'INV-009', '2024-03-11', NULL, 103, 'posuđeno', NULL),
+(10, 4, 'INV-010', NULL, NULL, NULL, 'dostupno', NULL),
+(11, 5, 'INV-011', '2024-01-15', NULL, 103, 'posuđeno', NULL),
+(12, 6, 'INV-012', '2024-01-16', NULL, 102, 'posuđeno', NULL),
+(13, 6, 'INV-013', NULL, NULL, NULL, 'dostupno', NULL),
+(14, 7, 'INV-014', '2024-05-05', NULL, 106, 'posuđeno', NULL),
+(15, 8, 'INV-015', '2024-05-07', NULL, 108, 'posuđeno', NULL),
+(16, 9, 'INV-016', NULL, NULL, NULL, 'dostupno', NULL),
+(17, 9, 'INV-017', NULL, NULL, NULL, 'dostupno', NULL),
+(18, 9, 'INV-018', NULL, NULL, NULL, 'dostupno', NULL),
+(19, 9, 'INV-019', NULL, NULL, NULL, 'dostupno', NULL),
+(20, 9, 'INV-020', NULL, NULL, NULL, 'dostupno', NULL),
+(21, 10, 'INV-021', '2024-06-01', NULL, 104, 'posuđeno', NULL),
+(22, 10, 'INV-022', NULL, NULL, NULL, 'dostupno', NULL),
+(23, 10, 'INV-023', NULL, NULL, NULL, 'dostupno', NULL),
+(24, 10, 'INV-024', NULL, NULL, NULL, 'dostupno', NULL),
+(25, 10, 'INV-025', NULL, NULL, NULL, 'dostupno', NULL),
+(26, 10, 'INV-026', NULL, NULL, NULL, 'dostupno', NULL),
+(27, 11, 'INV-027', NULL, NULL, NULL, 'dostupno', NULL),
+(28, 11, 'INV-028', NULL, NULL, NULL, 'dostupno', NULL),
+(29, 12, 'INV-029', '2024-05-15', NULL, 107, 'posuđeno', NULL),
+(30, 12, 'INV-030', NULL, NULL, NULL, 'dostupno', NULL),
+(31, 12, 'INV-031', NULL, NULL, NULL, 'dostupno', NULL),
+(32, 13, 'INV-032', '2024-05-20', NULL, 108, 'posuđeno', NULL),
+(33, 13, 'INV-033', '2024-05-22', NULL, 102, 'posuđeno', NULL),
+(34, 13, 'INV-034', NULL, NULL, NULL, 'dostupno', NULL),
+(35, 13, 'INV-035', NULL, NULL, NULL, 'dostupno', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `vrstaliterature`
+-- Table structure for table `rezervacija`
 --
 
-CREATE TABLE `vrstaliterature` (
-  `IDLiteratura` int(11) NOT NULL,
-  `vrsta_literature` varchar(50) NOT NULL,
-  `naslov` varchar(100) NOT NULL,
-  `ISBN_broj` varchar(20) DEFAULT NULL,
-  `broj_primjeraka` int(11) NOT NULL,
-  `AutorID` int(11) DEFAULT NULL,
-  `IzdavacID` int(11) DEFAULT NULL
+CREATE TABLE `rezervacija` (
+  `IDRezervacija` int(11) NOT NULL,
+  `KnjigaID` int(11) NOT NULL,
+  `ClanID` int(11) NOT NULL,
+  `DatumRezervacije` datetime NOT NULL DEFAULT current_timestamp(),
+  `RokPreuzimanja` datetime DEFAULT NULL,
+  `status` enum('aktivna','isporučeno','otkazano','isteklo') NOT NULL DEFAULT 'aktivna',
+  `napomena` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `vrstaliterature`
+-- Dumping data for table `rezervacija`
 --
 
-INSERT INTO `vrstaliterature` (`IDLiteratura`, `vrsta_literature`, `naslov`, `ISBN_broj`, `broj_primjeraka`, `AutorID`, `IzdavacID`) VALUES
-(1, 'Fakultativna knjiga', 'The Art of Computer Programming', '978-0-201-03804-2', 3, 1, 1),
-(2, 'Fakultativna knjiga', 'A Brief History of Time', '978-0-553-17521-9', 5, 2, 2),
-(3, 'Udžbenik', 'Mathematical Statistics with Applications', '9780134080918', 1, 3, 3),
-(4, 'Znanstveni časopis', 'On the Electrodynamics of Moving Bodies', NULL, 3, 4, 4),
-(5, 'Zbornik radova', 'Proceedings of AI Conference 2023', '978-0-123-45678-9', 2, 5, 5),
-(6, 'Priručnik', 'Introduction to Quantum Mechanics', '978-0-521-65842-4', 4, 6, 6),
-(7, 'Roman', '1984', '978-0-452-28423-4', 4, 7, 7),
-(8, 'Enciklopedija', 'National Geographic Encyclopedia', '978-1-4262-1300-0', 6, 8, 8),
-(9, 'Roman', 'Harry Potter and the Sorcerer\'s Stone', '978-0-545-01022-1', 5, 9, 9),
-(10, 'Roman', 'Ponos i predrasude', '978-953-7396-48-9', 4, 10, 10),
-(11, 'Znanstvena monografija', 'The Universe in a Nutshell', '978-0553802023', 2, 2, 2),
-(12, 'Enciklopedija', 'The Cambridge Encyclopedia of Language', '978-0521736503', 3, 11, 6),
-(13, 'Priručnik', 'Design Patterns: Elements of Reusable Object-Oriented Software', '978-0201633610', 5, 12, 1),
-(14, 'Zbirka poezije', 'Priče iz davnine', '978-953-6747-00-8', 2, 13, 11),
-(15, 'Biografija', 'Steve Jobs', '978-1451648539', 3, 14, 12),
-(16, 'Znanstveni časopis', 'Nature: International Journal of Science', NULL, 6, 15, 13),
-(17, 'Strip', 'Watchmen', '978-0930289232', 4, 16, 14),
-(18, 'Kriminalistički roman', 'Murder on the Orient Express', '978-0062073501', 3, 17, 15),
-(19, 'Povijesna studija', 'Sapiens: A Brief History of Humankind', '978-0062316097', 5, 18, 16),
-(20, 'Roman', 'Black Holes and Baby Universes', '978-0553406635', 2, 2, 2),
-(21, 'Znanstvena monografija', 'Relativity: The Special and General Theory', '978-1684226264', 3, 4, 4),
-(22, 'Priručnik', 'Concrete Mathematics', '978-0201558029', 4, 1, 1),
-(23, 'Biografija', 'Leonardo da Vinci', '978-1501139154', 2, 14, 12),
-(24, 'Enciklopedija', 'National Geographic Atlas of the World', '978-1426222193', 3, 8, 8),
-(25, 'Roman', 'Death on the Nile', '978-0062073556', 3, 17, 15),
-(26, 'Znanstveni časopis', 'Science: Academic Journal', NULL, 4, 15, 13),
-(27, 'Strip', 'V for Vendetta', '978-1401207922', 2, 16, 14),
-(28, 'Povijesna studija', 'Homo Deus', '978-0062464316', 3, 18, 16),
-(29, 'Udžbenik', 'Modern Elementary Statistics', '978-0135934598', 2, 3, 3);
+INSERT INTO `rezervacija` (`IDRezervacija`, `KnjigaID`, `ClanID`, `DatumRezervacije`, `RokPreuzimanja`, `status`, `napomena`) VALUES
+(1, 1, 104, '2024-06-01 10:00:00', '2024-06-08 10:00:00', 'aktivna', NULL),
+(2, 3, 107, '2024-06-02 11:30:00', '2024-06-09 11:30:00', 'aktivna', NULL),
+(3, 5, 109, '2024-05-28 14:15:00', '2024-06-04 14:15:00', 'isteklo', NULL),
+(4, 2, 101, '2024-06-03 09:20:00', '2024-06-10 09:20:00', 'aktivna', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vrsta`
+--
+
+CREATE TABLE `vrsta` (
+  `IDVrsta` int(11) NOT NULL,
+  `naziv` varchar(50) NOT NULL,
+  `opis` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `vrsta`
+--
+
+INSERT INTO `vrsta` (`IDVrsta`, `naziv`, `opis`) VALUES
+(1, 'Fakultativna knjiga', 'Dodatna literatura za studij'),
+(2, 'Udžbenik', 'Osnovna nastavna literatura'),
+(3, 'Znanstveni časopis', 'Stručni i znanstveni časopisi'),
+(4, 'Zbornik radova', 'Zbornici sa znanstvenih skupova'),
+(5, 'Priručnik', 'Stručni priručnici'),
+(6, 'Roman', 'Književna djela - romani'),
+(7, 'Enciklopedija', 'Enciklopedijska izdanja'),
+(8, 'Znanstvena monografija', 'Znanstvene monografije'),
+(9, 'Biografija', 'Biografska djela'),
+(10, 'Kriminalistički roman', 'Kriminalistički romani'),
+(11, 'Povijesna studija', 'Povijesne analize i studije'),
+(12, 'Strip', 'Strip izdanja');
 
 --
 -- Indexes for dumped tables
@@ -362,31 +337,45 @@ ALTER TABLE `izdavac`
   ADD UNIQUE KEY `Naziv` (`Naziv`);
 
 --
+-- Indexes for table `knjige`
+--
+ALTER TABLE `knjige`
+  ADD PRIMARY KEY (`IDKnjiga`),
+  ADD KEY `AutorID` (`AutorID`),
+  ADD KEY `IzdavacID` (`IzdavacID`),
+  ADD KEY `VrstaID` (`VrstaID`);
+
+--
 -- Indexes for table `posudba`
 --
 ALTER TABLE `posudba`
-  ADD PRIMARY KEY (`PosudbaID`),
-  ADD KEY `idx_datum_posudbe` (`DatumPosudbe`),
-  ADD KEY `idx_clan` (`ClanID`),
-  ADD KEY `PrimjerakID` (`PrimjerakID`);
+  ADD PRIMARY KEY (`IDPosudba`),
+  ADD KEY `PrimjerakID` (`PrimjerakID`),
+  ADD KEY `ClanID` (`ClanID`);
 
 --
 -- Indexes for table `primjerak`
 --
 ALTER TABLE `primjerak`
   ADD PRIMARY KEY (`IDPrimjerak`),
-  ADD KEY `LiteraturaID` (`LiteraturaID`),
-  ADD KEY `idx_dostupno` (`Dostupno`),
+  ADD UNIQUE KEY `inventarni_broj` (`inventarni_broj`),
+  ADD KEY `KnjigaID` (`KnjigaID`),
   ADD KEY `ClanID` (`ClanID`);
 
 --
--- Indexes for table `vrstaliterature`
+-- Indexes for table `rezervacija`
 --
-ALTER TABLE `vrstaliterature`
-  ADD PRIMARY KEY (`IDLiteratura`),
-  ADD KEY `idx_autor` (`AutorID`),
-  ADD KEY `idx_izdavac` (`IzdavacID`),
-  ADD KEY `idx_naslov` (`naslov`);
+ALTER TABLE `rezervacija`
+  ADD PRIMARY KEY (`IDRezervacija`),
+  ADD KEY `KnjigaID` (`KnjigaID`),
+  ADD KEY `ClanID` (`ClanID`);
+
+--
+-- Indexes for table `vrsta`
+--
+ALTER TABLE `vrsta`
+  ADD PRIMARY KEY (`IDVrsta`),
+  ADD UNIQUE KEY `naziv` (`naziv`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -411,49 +400,53 @@ ALTER TABLE `izdavac`
   MODIFY `IzdavacID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT for table `knjige`
+--
+ALTER TABLE `knjige`
+  MODIFY `IDKnjiga` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
 -- AUTO_INCREMENT for table `posudba`
 --
 ALTER TABLE `posudba`
-  MODIFY `PosudbaID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10000;
+  MODIFY `IDPosudba` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `primjerak`
 --
 ALTER TABLE `primjerak`
-  MODIFY `IDPrimjerak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000;
+  MODIFY `IDPrimjerak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT for table `vrstaliterature`
+-- AUTO_INCREMENT for table `rezervacija`
 --
-ALTER TABLE `vrstaliterature`
-  MODIFY `IDLiteratura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+ALTER TABLE `rezervacija`
+  MODIFY `IDRezervacija` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `vrsta`
+--
+ALTER TABLE `vrsta`
+  MODIFY `IDVrsta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
 --
 
 --
--- Constraints for table `posudba`
+-- Constraints for table `knjige`
 --
-ALTER TABLE `posudba`
-  ADD CONSTRAINT `posudba_ibfk_3` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`),
-  ADD CONSTRAINT `posudba_ibfk_4` FOREIGN KEY (`PrimjerakID`) REFERENCES `primjerak` (`IDPrimjerak`),
-  ADD CONSTRAINT `posudba_ibfk_5` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `posudba_ibfk_6` FOREIGN KEY (`PrimjerakID`) REFERENCES `primjerak` (`IDPrimjerak`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `knjige`
+  ADD CONSTRAINT `knjige_ibfk_1` FOREIGN KEY (`AutorID`) REFERENCES `autor` (`AutorID`),
+  ADD CONSTRAINT `knjige_ibfk_2` FOREIGN KEY (`IzdavacID`) REFERENCES `izdavac` (`IzdavacID`),
+  ADD CONSTRAINT `knjige_ibfk_3` FOREIGN KEY (`VrstaID`) REFERENCES `vrsta` (`IDVrsta`);
 
 --
--- Constraints for table `primjerak`
+-- Constraints for table `rezervacija`
 --
-ALTER TABLE `primjerak`
-  ADD CONSTRAINT `primjerak_ibfk_1` FOREIGN KEY (`LiteraturaID`) REFERENCES `vrstaliterature` (`IDLiteratura`),
-  ADD CONSTRAINT `primjerak_ibfk_3` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`) ON DELETE SET NULL ON UPDATE CASCADE;
-
---
--- Constraints for table `vrstaliterature`
---
-ALTER TABLE `vrstaliterature`
-  ADD CONSTRAINT `vrstaliterature_ibfk_1` FOREIGN KEY (`AutorID`) REFERENCES `autor` (`AutorID`),
-  ADD CONSTRAINT `vrstaliterature_ibfk_2` FOREIGN KEY (`IzdavacID`) REFERENCES `izdavac` (`IzdavacID`);
+ALTER TABLE `rezervacija`
+  ADD CONSTRAINT `rezervacija_ibfk_1` FOREIGN KEY (`KnjigaID`) REFERENCES `knjige` (`IDKnjiga`),
+  ADD CONSTRAINT `rezervacija_ibfk_2` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
