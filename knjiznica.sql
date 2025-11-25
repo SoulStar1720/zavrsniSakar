@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2025 at 01:32 PM
+-- Generation Time: Nov 25, 2025 at 11:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -440,6 +440,20 @@ ALTER TABLE `knjige`
   ADD CONSTRAINT `knjige_ibfk_1` FOREIGN KEY (`AutorID`) REFERENCES `autor` (`AutorID`),
   ADD CONSTRAINT `knjige_ibfk_2` FOREIGN KEY (`IzdavacID`) REFERENCES `izdavac` (`IzdavacID`),
   ADD CONSTRAINT `knjige_ibfk_3` FOREIGN KEY (`VrstaID`) REFERENCES `vrsta` (`IDVrsta`);
+
+--
+-- Constraints for table `posudba`
+--
+ALTER TABLE `posudba`
+  ADD CONSTRAINT `posudba_ibfk_1` FOREIGN KEY (`PrimjerakID`) REFERENCES `primjerak` (`IDPrimjerak`),
+  ADD CONSTRAINT `posudba_ibfk_2` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`);
+
+--
+-- Constraints for table `primjerak`
+--
+ALTER TABLE `primjerak`
+  ADD CONSTRAINT `primjerak_ibfk_1` FOREIGN KEY (`KnjigaID`) REFERENCES `knjige` (`IDKnjiga`),
+  ADD CONSTRAINT `primjerak_ibfk_2` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`);
 
 --
 -- Constraints for table `rezervacija`
