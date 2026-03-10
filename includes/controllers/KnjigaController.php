@@ -8,22 +8,30 @@ class KnjigaController {
 
     // Dohvati sve knjige s autorom i izdavačem 
     public function getAllBooks(int $page = 1, int $perPage = 10): array {
-        $offset = ($page - 1) * $perPage;
-        
-        $stmt = $this->conn->prepare("
-            SELECT v.IDLiteratura, v.naslov, v.ISBN_broj, v.broj_primjeraka,
-                   a.ImePrezime AS autor, i.Naziv AS izdavac
-            FROM VrstaLiterature v
-            JOIN Autor a ON v.AutorID = a.AutorID
-            JOIN Izdavac i ON v.IzdavacID = i.IzdavacID
-            ORDER BY v.naslov
-            LIMIT ? OFFSET ?
-        ");
-        $stmt->bind_param("ii", $perPage, $offset);
-        $stmt->execute();
-        
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
+
+    $offset = ($page - 1) * $perPage;
+
+    $stmt = $this->conn->prepare("
+        SELECT 
+        k.IDKnjiga AS IDLiteratura,
+        k.naslov,
+        k.ISBN_broj,
+        k.broj_primjeraka,
+        k.naslovnica,
+        a.ImePrezime AS autor,
+        i.Naziv AS izdavac
+        FROM knjige k
+        JOIN autor a ON k.AutorID = a.AutorID
+        JOIN izdavac i ON k.IzdavacID = i.IzdavacID
+        ORDER BY k.naslov
+        LIMIT ? OFFSET ?
+    ");
+
+    $stmt->bind_param("ii", $perPage, $offset);
+    $stmt->execute();
+
+    return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+}
 
     // Dohvati knjigu po ID-u s provjerom referenci
     public function getBookById(int $id): ?array {
@@ -92,7 +100,7 @@ class KnjigaController {
                 SELECT COUNT(*) 
                 FROM Primjerak p
                 JOIN Posudba po ON p.IDPrimjerak = po.PrimjerakID
-                WHERE p.LiteraturaID = ? AND po.DatumVracanja IS NULL
+                WHERE p.KnjigaID = ? AND po.DatumVracanja IS NULL
             ");
             $stmtCheck->bind_param("i", $id);
             $stmtCheck->execute();
@@ -102,12 +110,12 @@ class KnjigaController {
             }
 
             // Obriši primjerke
-            $stmt1 = $this->conn->prepare("DELETE FROM Primjerak WHERE LiteraturaID = ?");
+            $stmt1 = $this->conn->prepare("DELETE FROM primjerak WHERE KnjigaID = ?");
             $stmt1->bind_param("i", $id);
             $stmt1->execute();
             
             // Obriši knjigu
-            $stmt2 = $this->conn->prepare("DELETE FROM VrstaLiterature WHERE IDLiteratura = ?");
+            $stmt2 = $this->conn->prepare("DELETE FROM knjige WHERE IDKnjiga = ?");
             $stmt2->bind_param("i", $id);
             $stmt2->execute();
             
@@ -138,9 +146,9 @@ class KnjigaController {
     }
 
     public function countBooks(): int {
-        $result = $this->conn->query("SELECT COUNT(*) AS total FROM VrstaLiterature");
-        $row = $result->fetch_assoc();
-        return (int) $row['total'];
-    }
+    $result = $this->conn->query("SELECT COUNT(*) AS total FROM knjige");
+    $row = $result->fetch_assoc();
+    return (int)$row['total'];
+}
 }
 ?>

@@ -40,6 +40,7 @@ $total_pages = ceil($knjigaController->countBooks() / $per_page);
                         <thead class="table-dark">
                             <tr>
                                 <th>ID</th>
+                                <th>Naslovnica</th>
                                 <th>Naslov</th>
                                 <th>Autor</th>
                                 <th>ISBN</th>
@@ -52,6 +53,19 @@ $total_pages = ceil($knjigaController->countBooks() / $per_page);
                             <?php foreach ($knjige as $knjiga): ?>
                             <tr>
                                 <td><?= htmlspecialchars($knjiga['IDLiteratura']) ?></td>
+                                <td>
+                                    <?php
+                                    $img = $knjiga['naslovnica'] ?? '';
+                                    if ($img) {
+                                        // pretvara C:/xampp/htdocs u web putanju
+                                        $img = str_replace("C:/xampp/htdocs", "", $img);
+                                        echo "<img src='$img' width='60' class='img-thumbnail'>";
+                                        }
+                                        else {
+                                            echo "Nema slike";
+                                            }
+                            ?>
+                                </td>
                                 <td><?= htmlspecialchars($knjiga['naslov']) ?></td>
                                 <td><?= htmlspecialchars($knjiga['autor']) ?></td>
                                 <td><?= htmlspecialchars($knjiga['ISBN_broj'] ?? 'N/A') ?></td>

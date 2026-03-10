@@ -18,24 +18,37 @@ $vrste_literature = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $podaci = [
-        'naslov' => trim($_POST['naslov']),
-        'autor' => trim($_POST['autor']),
-        'isbn' => trim($_POST['isbn']),
-        'izdavac' => trim($_POST['izdavac']),
-        'vrsta' => $_POST['vrsta'],
-        'broj_primjeraka' => (int)$_POST['broj_primjeraka']
-    ];
-
-    try {
-        if ($knjigaController->addBook($podaci)) {
-            $_SESSION['success'] = "Knjiga uspješno dodana!";
-            header("Location: index.php");
-            exit();
-        }
-    } catch (Exception $e) {
-        $error = $e->getMessage();
-    }
+    $putanja_slike = null;
+    // upload slike
+    if (!empty($_FILES['naslovnica']['name'])) {
+        $upload_dir = $_SERVER['DOCUMENT_ROOT'] . "/zavrsniSakar/naslovnice/";
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+            }
+            $ime_slike = time() . "_" . basename($_FILES['naslovnica']['name']);
+            $putanja_slike = $upload_dir . $ime_slike;
+            move_uploaded_file($_FILES['naslovnica']['tmp_name'], $putanja_slike);
+            }
+            
+            $podaci = [
+                'naslov' => trim($_POST['naslov']),
+                'autor' => trim($_POST['autor']),
+                'isbn' => trim($_POST['isbn']),
+                'izdavac' => trim($_POST['izdavac']),
+                'vrsta' => $_POST['vrsta'],
+                'broj_primjeraka' => (int)$_POST['broj_primjeraka'],
+                'naslovnica' => $putanja_slike
+                ];
+                
+        try {
+            if ($knjigaController->addBook($podaci)) {
+                $_SESSION['success'] = "Knjiga uspješno dodana!";
+                header("Location: index.php");
+                exit();
+                }
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+                }
 }
 ?>
 
@@ -64,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
                 <?php endif; ?>
 
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Naslov knjige</label>
@@ -100,6 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-md-6">
                             <label class="form-label">Broj primjeraka</label>
                             <input type="number" name="broj_primjeraka" class="form-control" min="1" value="1" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">Naslovnica knjige</label>
+                            <input type="file" name="naslovnica" class="form-control" accept="image/*">
                         </div>
 
                         <div class="col-12">

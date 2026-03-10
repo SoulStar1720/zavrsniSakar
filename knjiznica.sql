@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 27, 2025 at 01:32 PM
+-- Generation Time: Mar 10, 2026 at 11:04 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -173,29 +173,28 @@ CREATE TABLE `posudba` (
   `DatumPosudbe` datetime NOT NULL DEFAULT current_timestamp(),
   `DatumVracanja` datetime DEFAULT NULL,
   `RokVracanja` datetime DEFAULT NULL,
-  `status` enum('aktivna','vraćeno','kasni','otkazano') NOT NULL DEFAULT 'aktivna',
-  `napomena` text DEFAULT NULL
+  `status` enum('aktivna','vraćeno','kasni','otkazano') NOT NULL DEFAULT 'aktivna'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `posudba`
 --
 
-INSERT INTO `posudba` (`IDPosudba`, `PrimjerakID`, `ClanID`, `DatumPosudbe`, `DatumVracanja`, `RokVracanja`, `status`, `napomena`) VALUES
-(1, 1, 101, '2024-01-10 10:00:00', NULL, '2024-02-09 10:00:00', 'aktivna', NULL),
-(2, 2, 103, '2024-01-12 11:30:00', NULL, '2024-02-11 11:30:00', 'aktivna', NULL),
-(3, 4, 102, '2024-01-05 14:15:00', NULL, '2024-02-04 14:15:00', 'aktivna', NULL),
-(4, 7, 105, '2024-01-03 09:45:00', NULL, '2024-02-02 09:45:00', 'vraćeno', NULL),
-(5, 8, 101, '2024-03-10 16:20:00', NULL, '2024-04-09 16:20:00', 'aktivna', NULL),
-(6, 9, 103, '2024-03-11 13:10:00', NULL, '2024-04-10 13:10:00', 'aktivna', NULL),
-(7, 11, 103, '2024-01-15 10:30:00', NULL, '2024-02-14 10:30:00', 'aktivna', NULL),
-(8, 12, 102, '2024-01-16 15:45:00', NULL, '2024-02-15 15:45:00', 'aktivna', NULL),
-(9, 14, 106, '2024-05-05 12:00:00', NULL, '2024-06-04 12:00:00', 'aktivna', NULL),
-(10, 15, 108, '2024-05-07 14:30:00', NULL, '2024-06-06 14:30:00', 'aktivna', NULL),
-(11, 16, 104, '2024-06-01 10:00:00', NULL, '2024-07-01 10:00:00', 'aktivna', NULL),
-(12, 24, 107, '2024-05-15 14:30:00', NULL, '2024-06-14 14:30:00', 'aktivna', NULL),
-(13, 27, 108, '2024-05-20 11:15:00', NULL, '2024-06-19 11:15:00', 'aktivna', NULL),
-(14, 28, 102, '2024-05-22 16:45:00', NULL, '2024-06-21 16:45:00', 'aktivna', NULL);
+INSERT INTO `posudba` (`IDPosudba`, `PrimjerakID`, `ClanID`, `DatumPosudbe`, `DatumVracanja`, `RokVracanja`, `status`) VALUES
+(1, 1, 101, '2024-01-10 10:00:00', NULL, '2024-02-09 10:00:00', 'aktivna'),
+(2, 2, 103, '2024-01-12 11:30:00', NULL, '2024-02-11 11:30:00', 'aktivna'),
+(3, 4, 102, '2024-01-05 14:15:00', NULL, '2024-02-04 14:15:00', 'aktivna'),
+(4, 7, 105, '2024-01-03 09:45:00', NULL, '2024-02-02 09:45:00', 'vraćeno'),
+(5, 8, 101, '2024-03-10 16:20:00', NULL, '2024-04-09 16:20:00', 'aktivna'),
+(6, 9, 103, '2024-03-11 13:10:00', NULL, '2024-04-10 13:10:00', 'aktivna'),
+(7, 11, 103, '2024-01-15 10:30:00', NULL, '2024-02-14 10:30:00', 'aktivna'),
+(8, 12, 102, '2024-01-16 15:45:00', NULL, '2024-02-15 15:45:00', 'aktivna'),
+(9, 14, 106, '2024-05-05 12:00:00', NULL, '2024-06-04 12:00:00', 'aktivna'),
+(10, 15, 108, '2024-05-07 14:30:00', NULL, '2024-06-06 14:30:00', 'aktivna'),
+(11, 16, 104, '2024-06-01 10:00:00', NULL, '2024-07-01 10:00:00', 'aktivna'),
+(12, 24, 107, '2024-05-15 14:30:00', NULL, '2024-06-14 14:30:00', 'aktivna'),
+(13, 27, 108, '2024-05-20 11:15:00', NULL, '2024-06-19 11:15:00', 'aktivna'),
+(14, 28, 102, '2024-05-22 16:45:00', NULL, '2024-06-21 16:45:00', 'aktivna');
 
 -- --------------------------------------------------------
 
@@ -210,50 +209,49 @@ CREATE TABLE `primjerak` (
   `DatumPosudbe` date DEFAULT NULL,
   `DatumVracanja` date DEFAULT NULL,
   `ClanID` int(11) DEFAULT NULL,
-  `status` enum('dostupno','posuđeno','rezervirano','na popravku','izgubljeno') DEFAULT 'dostupno',
-  `napomena` text DEFAULT NULL
+  `status` enum('dostupno','posuđeno','rezervirano','na popravku','izgubljeno') DEFAULT 'dostupno'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `primjerak`
 --
 
-INSERT INTO `primjerak` (`IDPrimjerak`, `KnjigaID`, `inventarni_broj`, `DatumPosudbe`, `DatumVracanja`, `ClanID`, `status`, `napomena`) VALUES
-(1, 1, 'INV-001', '2024-01-10', NULL, 101, 'posuđeno', NULL),
-(2, 1, 'INV-002', '2024-01-12', NULL, 103, 'posuđeno', NULL),
-(3, 1, 'INV-003', NULL, NULL, NULL, 'dostupno', NULL),
-(4, 2, 'INV-004', '2024-01-05', NULL, 102, 'posuđeno', NULL),
-(5, 2, 'INV-005', NULL, NULL, NULL, 'dostupno', NULL),
-(6, 2, 'INV-006', NULL, NULL, NULL, 'dostupno', NULL),
-(7, 3, 'INV-007', '2024-01-03', NULL, 105, 'posuđeno', NULL),
-(8, 4, 'INV-008', '2024-03-10', NULL, 101, 'posuđeno', NULL),
-(9, 4, 'INV-009', '2024-03-11', NULL, 103, 'posuđeno', NULL),
-(10, 4, 'INV-010', NULL, NULL, NULL, 'dostupno', NULL),
-(11, 5, 'INV-011', '2024-01-15', NULL, 103, 'posuđeno', NULL),
-(12, 6, 'INV-012', '2024-01-16', NULL, 102, 'posuđeno', NULL),
-(13, 6, 'INV-013', NULL, NULL, NULL, 'dostupno', NULL),
-(14, 7, 'INV-014', '2024-05-05', NULL, 106, 'posuđeno', NULL),
-(15, 8, 'INV-015', '2024-05-07', NULL, 108, 'posuđeno', NULL),
-(16, 9, 'INV-016', NULL, NULL, NULL, 'dostupno', NULL),
-(17, 9, 'INV-017', NULL, NULL, NULL, 'dostupno', NULL),
-(18, 9, 'INV-018', NULL, NULL, NULL, 'dostupno', NULL),
-(19, 9, 'INV-019', NULL, NULL, NULL, 'dostupno', NULL),
-(20, 9, 'INV-020', NULL, NULL, NULL, 'dostupno', NULL),
-(21, 10, 'INV-021', '2024-06-01', NULL, 104, 'posuđeno', NULL),
-(22, 10, 'INV-022', NULL, NULL, NULL, 'dostupno', NULL),
-(23, 10, 'INV-023', NULL, NULL, NULL, 'dostupno', NULL),
-(24, 10, 'INV-024', NULL, NULL, NULL, 'dostupno', NULL),
-(25, 10, 'INV-025', NULL, NULL, NULL, 'dostupno', NULL),
-(26, 10, 'INV-026', NULL, NULL, NULL, 'dostupno', NULL),
-(27, 11, 'INV-027', NULL, NULL, NULL, 'dostupno', NULL),
-(28, 11, 'INV-028', NULL, NULL, NULL, 'dostupno', NULL),
-(29, 12, 'INV-029', '2024-05-15', NULL, 107, 'posuđeno', NULL),
-(30, 12, 'INV-030', NULL, NULL, NULL, 'dostupno', NULL),
-(31, 12, 'INV-031', NULL, NULL, NULL, 'dostupno', NULL),
-(32, 13, 'INV-032', '2024-05-20', NULL, 108, 'posuđeno', NULL),
-(33, 13, 'INV-033', '2024-05-22', NULL, 102, 'posuđeno', NULL),
-(34, 13, 'INV-034', NULL, NULL, NULL, 'dostupno', NULL),
-(35, 13, 'INV-035', NULL, NULL, NULL, 'dostupno', NULL);
+INSERT INTO `primjerak` (`IDPrimjerak`, `KnjigaID`, `inventarni_broj`, `DatumPosudbe`, `DatumVracanja`, `ClanID`, `status`) VALUES
+(1, 1, 'INV-001', '2024-01-10', NULL, 101, 'posuđeno'),
+(2, 1, 'INV-002', '2024-01-12', NULL, 103, 'posuđeno'),
+(3, 1, 'INV-003', NULL, NULL, NULL, 'dostupno'),
+(4, 2, 'INV-004', '2024-01-05', NULL, 102, 'posuđeno'),
+(5, 2, 'INV-005', NULL, NULL, NULL, 'dostupno'),
+(6, 2, 'INV-006', NULL, NULL, NULL, 'dostupno'),
+(7, 3, 'INV-007', '2024-01-03', NULL, 105, 'posuđeno'),
+(8, 4, 'INV-008', '2024-03-10', NULL, 101, 'posuđeno'),
+(9, 4, 'INV-009', '2024-03-11', NULL, 103, 'posuđeno'),
+(10, 4, 'INV-010', NULL, NULL, NULL, 'dostupno'),
+(11, 5, 'INV-011', '2024-01-15', NULL, 103, 'posuđeno'),
+(12, 6, 'INV-012', '2024-01-16', NULL, 102, 'posuđeno'),
+(13, 6, 'INV-013', NULL, NULL, NULL, 'dostupno'),
+(14, 7, 'INV-014', '2024-05-05', NULL, 106, 'posuđeno'),
+(15, 8, 'INV-015', '2024-05-07', NULL, 108, 'posuđeno'),
+(16, 9, 'INV-016', NULL, NULL, NULL, 'dostupno'),
+(17, 9, 'INV-017', NULL, NULL, NULL, 'dostupno'),
+(18, 9, 'INV-018', NULL, NULL, NULL, 'dostupno'),
+(19, 9, 'INV-019', NULL, NULL, NULL, 'dostupno'),
+(20, 9, 'INV-020', NULL, NULL, NULL, 'dostupno'),
+(21, 10, 'INV-021', '2024-06-01', NULL, 104, 'posuđeno'),
+(22, 10, 'INV-022', NULL, NULL, NULL, 'dostupno'),
+(23, 10, 'INV-023', NULL, NULL, NULL, 'dostupno'),
+(24, 10, 'INV-024', NULL, NULL, NULL, 'dostupno'),
+(25, 10, 'INV-025', NULL, NULL, NULL, 'dostupno'),
+(26, 10, 'INV-026', NULL, NULL, NULL, 'dostupno'),
+(27, 11, 'INV-027', NULL, NULL, NULL, 'dostupno'),
+(28, 11, 'INV-028', NULL, NULL, NULL, 'dostupno'),
+(29, 12, 'INV-029', '2024-05-15', NULL, 107, 'posuđeno'),
+(30, 12, 'INV-030', NULL, NULL, NULL, 'dostupno'),
+(31, 12, 'INV-031', NULL, NULL, NULL, 'dostupno'),
+(32, 13, 'INV-032', '2024-05-20', NULL, 108, 'posuđeno'),
+(33, 13, 'INV-033', '2024-05-22', NULL, 102, 'posuđeno'),
+(34, 13, 'INV-034', NULL, NULL, NULL, 'dostupno'),
+(35, 13, 'INV-035', NULL, NULL, NULL, 'dostupno');
 
 -- --------------------------------------------------------
 
@@ -267,19 +265,18 @@ CREATE TABLE `rezervacija` (
   `ClanID` int(11) NOT NULL,
   `DatumRezervacije` datetime NOT NULL DEFAULT current_timestamp(),
   `RokPreuzimanja` datetime DEFAULT NULL,
-  `status` enum('aktivna','isporučeno','otkazano','isteklo') NOT NULL DEFAULT 'aktivna',
-  `napomena` text DEFAULT NULL
+  `status` enum('aktivna','isporučeno','otkazano','isteklo') NOT NULL DEFAULT 'aktivna'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `rezervacija`
 --
 
-INSERT INTO `rezervacija` (`IDRezervacija`, `KnjigaID`, `ClanID`, `DatumRezervacije`, `RokPreuzimanja`, `status`, `napomena`) VALUES
-(1, 1, 104, '2024-06-01 10:00:00', '2024-06-08 10:00:00', 'aktivna', NULL),
-(2, 3, 107, '2024-06-02 11:30:00', '2024-06-09 11:30:00', 'aktivna', NULL),
-(3, 5, 109, '2024-05-28 14:15:00', '2024-06-04 14:15:00', 'isteklo', NULL),
-(4, 2, 101, '2024-06-03 09:20:00', '2024-06-10 09:20:00', 'aktivna', NULL);
+INSERT INTO `rezervacija` (`IDRezervacija`, `KnjigaID`, `ClanID`, `DatumRezervacije`, `RokPreuzimanja`, `status`) VALUES
+(1, 1, 104, '2024-06-01 10:00:00', '2024-06-08 10:00:00', 'aktivna'),
+(2, 3, 107, '2024-06-02 11:30:00', '2024-06-09 11:30:00', 'aktivna'),
+(3, 5, 109, '2024-05-28 14:15:00', '2024-06-04 14:15:00', 'isteklo'),
+(4, 2, 101, '2024-06-03 09:20:00', '2024-06-10 09:20:00', 'aktivna');
 
 -- --------------------------------------------------------
 
@@ -440,6 +437,20 @@ ALTER TABLE `knjige`
   ADD CONSTRAINT `knjige_ibfk_1` FOREIGN KEY (`AutorID`) REFERENCES `autor` (`AutorID`),
   ADD CONSTRAINT `knjige_ibfk_2` FOREIGN KEY (`IzdavacID`) REFERENCES `izdavac` (`IzdavacID`),
   ADD CONSTRAINT `knjige_ibfk_3` FOREIGN KEY (`VrstaID`) REFERENCES `vrsta` (`IDVrsta`);
+
+--
+-- Constraints for table `posudba`
+--
+ALTER TABLE `posudba`
+  ADD CONSTRAINT `posudba_ibfk_1` FOREIGN KEY (`PrimjerakID`) REFERENCES `primjerak` (`IDPrimjerak`),
+  ADD CONSTRAINT `posudba_ibfk_2` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`);
+
+--
+-- Constraints for table `primjerak`
+--
+ALTER TABLE `primjerak`
+  ADD CONSTRAINT `primjerak_ibfk_1` FOREIGN KEY (`ClanID`) REFERENCES `clan` (`IDClan`),
+  ADD CONSTRAINT `primjerak_ibfk_2` FOREIGN KEY (`KnjigaID`) REFERENCES `knjige` (`IDKnjiga`);
 
 --
 -- Constraints for table `rezervacija`
