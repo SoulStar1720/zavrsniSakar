@@ -9,7 +9,6 @@ requireAdmin();
 $knjigaController = new KnjigaController($conn);
 $error = '';
 
-// Lista vrsta literature
 $vrste_literature = [
     'Udžbenik',
     'Fakultativna knjiga',
@@ -17,8 +16,8 @@ $vrste_literature = [
     'Stručna literatura'
 ];
 
-// Dohvat postojećih podataka
 $knjiga = null;
+
 if (isset($_GET['id'])) {
     $knjiga = $knjigaController->getBookById((int)$_GET['id']);
 }
@@ -30,6 +29,25 @@ if (!$knjiga) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $putanja_slike = $knjiga['naslovnica'];
+
+    // ako je uploadana nova slika
+    if (!empty($_FILES['naslovnica']['name'])) {
+
+        $upload_dir = $_SERVER['DOCUMENT_ROOT'] . "/zavrsniSakar/naslovnice/";
+
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        $ime_slike = time() . "_" . basename($_FILES['naslovnica']['name']);
+
+        $putanja_slike = $upload_dir . $ime_slike;
+
+        move_uploaded_file($_FILES['naslovnica']['tmp_name'], $putanja_slike);
+    }
+
     $podaci = [
         'naslov' => trim($_POST['naslov']),
         'autor' => trim($_POST['autor']),
@@ -37,17 +55,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'izdavac' => trim($_POST['izdavac']),
         'vrsta' => $_POST['vrsta'],
         'broj_primjeraka' => (int)$_POST['broj_primjeraka'],
-        'id' => $knjiga['IDLiteratura']
+        'naslovnica' => $putanja_slike
     ];
 
     try {
+
         if ($knjigaController->updateBook($knjiga['IDLiteratura'], $podaci)) {
+
             $_SESSION['success'] = "Knjiga uspješno ažurirana!";
             header("Location: index.php");
             exit();
+
         }
+
     } catch (Exception $e) {
+
         $error = $e->getMessage();
+
     }
 }
 ?>
@@ -55,10 +79,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="hr">
 <head>
-    <meta charset="UTF-8">
-    <title>Uredi knjigu</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<meta charset="UTF-8">
+<title>Uredi knjigu</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="container mt-5">
@@ -71,65 +97,106 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </a>
                 </h3>
             </div>
-
+            
             <div class="card-body">
                 <?php if (!empty($error)): ?>
-                    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-                <?php endif; ?>
-
-                <form method="POST">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label">Naslov knjige</label>
-                            <input type="text" name="naslov" class="form-control" 
-                                   value="<?= htmlspecialchars($knjiga['naslov']) ?>" required>
-                        </div>
-                        
+                    
+                    <div class="alert alert-danger">
+                        <?= htmlspecialchars($error) ?>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Naslov knjige</label>
+                                <input
+                                type="text"
+                                name="naslov"
+                                class="form-control"
+                                value="<?= htmlspecialchars($knjiga['naslov']) ?>"
+                                required>
+                            </div>
+                            
                         <div class="col-md-6">
                             <label class="form-label">Autor</label>
-                            <input type="text" name="autor" class="form-control"
-                                   value="<?= htmlspecialchars($knjiga['autor']) ?>" required>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label">ISBN broj</label>
-                            <input type="text" name="isbn" class="form-control"
-                                   value="<?= htmlspecialchars($knjiga['ISBN_broj']) ?>">
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label">Izdavač</label>
-                            <input type="text" name="izdavac" class="form-control"
-                                   value="<?= htmlspecialchars($knjiga['izdavac']) ?>" required>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label">Vrsta literature</label>
-                            <select name="vrsta" class="form-select" required>
-                                <?php foreach ($vrste_literature as $vrsta): ?>
-                                    <option value="<?= htmlspecialchars($vrsta) ?>" 
-                                        <?= $vrsta === $knjiga['vrsta_literature'] ? 'selected' : '' ?>>
+                            <input
+                            type="text"
+                            name="autor"
+                            class="form-control"
+                            value="<?= htmlspecialchars($knjiga['autor']) ?>"
+                            required
+                            ></div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">ISBN broj</label>
+                                <input
+                                type="text"
+                                name="isbn"
+                                class="form-control"
+                                value="<?= htmlspecialchars($knjiga['ISBN_broj']) ?>">
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Izdavač</label>
+                                <input
+                                type="text"
+                                name="izdavac"
+                                class="form-control"
+                                value="<?= htmlspecialchars($knjiga['izdavac']) ?>"
+                                required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Vrsta literature</label>
+                                <select name="vrsta" class="form-select" required>
+                                    <?php foreach ($vrste_literature as $vrsta): ?>
+                                        <option
+                                        value="<?= htmlspecialchars($vrsta) ?>"
+                                        <?= $vrsta === ($knjiga['vrsta_literature'] ?? '') ? 'selected' : '' ?>>
                                         <?= htmlspecialchars($vrsta) ?>
                                     </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label">Broj primjeraka</label>
-                            <input type="number" name="broj_primjeraka" class="form-control" 
-                                   min="1" value="<?= htmlspecialchars($knjiga['broj_primjeraka']) ?>" required>
-                        </div>
-
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Spremi promjene
-                            </button>
-                        </div>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Broj primjeraka</label>
+                                <input
+                                type="number"
+                                name="broj_primjeraka"
+                                class="form-control"
+                                min="1"
+                                value="<?= htmlspecialchars($knjiga['broj_primjeraka']) ?>"
+                                required>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label">Promijeni naslovnicu</label>
+                                <input
+                                type="file"
+                                name="naslovnica"
+                                class="form-control"
+                                accept="image/*">
+                            </div>
+                            <?php if (!empty($knjiga['naslovnica'])): ?>
+                                <div class="col-12">
+                                    <label class="form-label">Trenutna naslovnica</label>
+                                    <br>
+                                    <img
+                                    src="<?= str_replace($_SERVER['DOCUMENT_ROOT'], '', $knjiga['naslovnica']) ?>"
+                                    style="max-height:150px">
+                                </div>
+                                <?php endif; ?>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save"></i> Spremi promjene
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-</body>
+        </body>
 </html>
