@@ -9,32 +9,46 @@ requireAdmin();
 $posudbaController = new PosudbaController($conn);
 $error = '';
 
-// Dohvat dostupnih članova i primjeraka
+// Dohvat članova
 $clanovi = [];
-$primjerci = [];
-$stmtClanovi = $conn->query("SELECT IDClan, CONCAT(Prezime, ' ', Ime) AS ImePrezime FROM Clan ORDER BY Prezime");
+$stmtClanovi = $conn->query("
+    SELECT IDClan, CONCAT(Prezime, ' ', Ime) AS ImePrezime 
+    FROM clan 
+    ORDER BY Prezime
+");
 $clanovi = $stmtClanovi->fetch_all(MYSQLI_ASSOC);
 
+// Dohvat dostupnih primjeraka (ISPRAVLJENO)
+$primjerci = [];
 $stmtPrimjerci = $conn->query("
-    SELECT p.IDPrimjerak, v.naslov 
-    FROM Primjerak p
-    JOIN VrstaLiterature v ON p.LiteraturaID = v.IDLiteratura
+    SELECT 
+        p.IDPrimjerak, 
+        k.naslov 
+    FROM primjerak p
+    JOIN knjige k ON p.KnjigaID = k.IDKnjiga
     WHERE p.Dostupno = 'dostupno'
 ");
 $primjerci = $stmtPrimjerci->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     try {
+
         if ($posudbaController->createLoan(
             (int)$_POST['clanID'],
             (int)$_POST['primjerakID']
         )) {
+
             $_SESSION['success'] = "Knjiga uspješno posuđena!";
             header("Location: index.php");
             exit();
+
         }
+
     } catch (Exception $e) {
+
         $error = $e->getMessage();
+
     }
 }
 ?>
@@ -42,10 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="hr">
 <head>
-    <meta charset="UTF-8">
-    <title>Nova posudba</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+<meta charset="UTF-8">
+<title>Nova posudba</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="container mt-5">
@@ -58,45 +73,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </a>
                 </h3>
             </div>
-
             <div class="card-body">
-                <?php if (!empty($error)): ?>
-                    <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-                <?php endif; ?>
 
-                <form method="POST">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">Član</label>
-                            <select name="clanID" class="form-select" required>
-                                <?php foreach ($clanovi as $clan): ?>
-                                    <option value="<?= $clan['IDClan'] ?>">
-                                        <?= htmlspecialchars($clan['ImePrezime']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label">Dostupni primjerci</label>
-                            <select name="primjerakID" class="form-select" required>
-                                <?php foreach ($primjerci as $primjerak): ?>
-                                    <option value="<?= $primjerak['IDPrimjerak'] ?>">
-                                        <?= htmlspecialchars($primjerak['naslov']) ?> (ID: <?= $primjerak['IDPrimjerak'] ?>)
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-lg"></i> Potvrdi posudbu
-                            </button>
-                        </div>
+<?php if (!empty($error)): ?>
+    <div class="alert alert-danger">
+        <?= htmlspecialchars($error) ?>
+    </div>
+    <?php endif; ?>
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Član</label>
+                <select name="clanID" class="form-select" required>
+                    <?php foreach ($clanovi as $clan): ?>
+                        <option value="<?= $clan['IDClan'] ?>">
+                            <?= htmlspecialchars($clan['ImePrezime']) ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Dostupni primjerci</label>
+                    <select name="primjerakID" class="form-select" required>
+                        <?php foreach ($primjerci as $primjerak): ?>
+                            <option value="<?= $primjerak['IDPrimjerak'] ?>">
+                                <?= htmlspecialchars($primjerak['naslov']) ?> 
+                                (ID: <?= $primjerak['IDPrimjerak'] ?>)
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
-                </form>
-            </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Potvrdi posudbu
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 </body>
 </html>

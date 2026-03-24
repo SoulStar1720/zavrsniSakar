@@ -58,7 +58,7 @@ $posudbe = $posudbaController->getAllLoans();
                                 </td>
                                 <td class="text-end">
                                     <?php if (!$posudba['DatumVracanja']): ?>
-                                    <a href="vrati.php?id=<?= $posudba['PosudbaID'] ?>" 
+                                    <a href="vrati.php?id=<?= $posudba['IDPosudba'] ?>" 
                                        class="btn btn-sm btn-success"
                                        title="Vrati knjigu">
                                         <i class="bi bi-arrow-return-left"></i>
