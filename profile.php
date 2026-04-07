@@ -26,11 +26,11 @@ $user = $stmtUser->get_result()->fetch_assoc();
 
 // Aktivne posudbe
 $stmtPosudbe = $conn->prepare("
-    SELECT v.naslov, p.DatumPosudbe 
+    SELECT v.naziv, p.DatumPosudbe 
     FROM Posudba pa
     JOIN Primjerak p ON pa.PrimjerakID = p.IDPrimjerak
-    JOIN VrstaLiterature v ON p.LiteraturaID = v.IDLiteratura
-    WHERE pa.ClanID = ? AND pa.DatumVracanja IS NULL
+    JOIN Vrsta v ON p.KnjigaID = v.IDVrsta
+    WHERE pa.ClanID = ? AND pa.DatumVracanja IS NULL;
 ");
 $stmtPosudbe->bind_param("i", $userId);
 $stmtPosudbe->execute();
