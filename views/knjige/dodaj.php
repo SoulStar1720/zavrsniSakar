@@ -9,12 +9,21 @@ requireAdmin();
 $knjigaController = new KnjigaController($conn);
 $error = '';
 
-// Lista izdavača i autora (prilagodite prema vašoj bazi)
+
 $vrste_literature = [
     'Udžbenik',
     'Fakultativna knjiga',
     'Znanstveni časopis',
-    'Stručna literatura'
+    'Stručna literatura',
+    'Zbornik radova',
+    'Priručnik',
+    'Roman',
+    'Enciklopedija',
+    'Znanstvena monografija',
+    'Biografija',
+    'Kriminalistički roman',
+    'Povijesna studija',
+    'Strip'
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

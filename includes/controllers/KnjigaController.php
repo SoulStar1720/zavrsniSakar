@@ -13,7 +13,7 @@ class KnjigaController {
 
     $stmt = $this->conn->prepare("
         SELECT 
-        k.IDKnjiga AS IDLiteratura,
+        k.IDKnjiga AS IDVrsta,
         k.naslov,
         k.ISBN_broj,
         k.broj_primjeraka,
@@ -37,10 +37,10 @@ class KnjigaController {
     public function getBookById(int $id): ?array {
         $stmt = $this->conn->prepare("
             SELECT v.*, a.ImePrezime, i.Naziv 
-            FROM VrstaLiterature v
+            FROM Vrsta v
             JOIN Autor a ON v.AutorID = a.AutorID
             JOIN Izdavac i ON v.IzdavacID = i.IzdavacID
-            WHERE v.IDLiteratura = ?
+            WHERE v.IDVrsta = ?
         ");
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -133,8 +133,8 @@ class KnjigaController {
         $searchTerm = "%$query%";
         
         $stmt = $this->conn->prepare("
-            SELECT v.IDLiteratura, v.naslov, a.ImePrezime AS autor
-            FROM VrstaLiterature v
+            SELECT v.IDVrsta, v.naslov, a.ImePrezime AS autor
+            FROM Vrsta v
             JOIN Autor a ON v.AutorID = a.AutorID
             WHERE v.naslov LIKE ? 
                OR a.ImePrezime LIKE ?

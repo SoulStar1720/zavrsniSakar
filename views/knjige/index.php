@@ -52,7 +52,7 @@ $total_pages = ceil($knjigaController->countBooks() / $per_page);
                         <tbody>
                             <?php foreach ($knjige as $knjiga): ?>
                             <tr>
-                                <td><?= htmlspecialchars($knjiga['IDLiteratura']) ?></td>
+                                <td><?= htmlspecialchars($knjiga['IDVrsta']) ?></td>
                                 <td>
                                     <?php
                                     $img = $knjiga['naslovnica'] ?? '';
@@ -73,12 +73,12 @@ $total_pages = ceil($knjigaController->countBooks() / $per_page);
                                 <td><?= htmlspecialchars($knjiga['broj_primjeraka']) ?></td>
                                 <td class="text-end">
                                     <div class="btn-group">
-                                        <a href="uredi.php?id=<?= $knjiga['IDLiteratura'] ?>" 
+                                        <a href="uredi.php?id=<?= $knjiga['IDVrsta'] ?>" 
                                            class="btn btn-sm btn-warning"
                                            title="Uredi">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <a href="obrisi.php?id=<?= $knjiga['IDLiteratura'] ?>" 
+                                        <a href="obrisi.php?id=<?= $knjiga['IDVrsta'] ?>" 
                                            class="btn btn-sm btn-danger"
                                            title="Obriši"
                                            onclick="return confirm('Jeste li sigurni?')">
