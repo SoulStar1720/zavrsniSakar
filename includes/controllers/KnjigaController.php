@@ -36,12 +36,17 @@ class KnjigaController {
     // Dohvati knjigu po ID-u s provjerom referenci
     public function getBookById(int $id): ?array {
         $stmt = $this->conn->prepare("
-            SELECT v.*, a.ImePrezime, i.Naziv 
-            FROM Vrsta v
-            JOIN Autor a ON v.AutorID = a.AutorID
-            JOIN Izdavac i ON v.IzdavacID = i.IzdavacID
-            WHERE v.IDVrsta = ?
-        ");
+    SELECT 
+        k.*, 
+        a.ImePrezime AS autor, 
+        i.Naziv AS izdavac,
+        v.naziv AS vrsta
+    FROM knjige k
+    JOIN autor a ON k.AutorID = a.AutorID
+    JOIN izdavac i ON k.IzdavacID = i.IzdavacID
+    JOIN vrsta v ON k.VrstaID = v.IDVrsta
+    WHERE k.IDKnjiga = ?
+");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         
@@ -49,44 +54,66 @@ class KnjigaController {
         return $result ?: null;
     }
 
-    // Dodaj novu knjigu s provjerom validnosti ID-jeva
-    public function addBook(array $bookData): bool {
-        try {
-            // Check if 'autor_id' and 'izdavac_id' exist in the array
-            $autorId = isset($bookData['autor_id']) ? (int)$bookData['autor_id'] : null;
-            $izdavacId = isset($bookData['izdavac_id']) ? (int)$bookData['izdavac_id'] : null;
+    // Pronađi autora ili ga dodaj ako ne postoji
+    private function getOrCreateAutor(string $imePrezime): int {
+        $stmt = $this->conn->prepare("SELECT AutorID FROM autor WHERE ImePrezime = ?");
+        $stmt->bind_param("s", $imePrezime);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        if ($row) return (int)$row['AutorID'];
 
-            // Validate IDs
-            $this->validateIds($autorId, $izdavacId);
-
-            // Proceed with adding the book...
-            // Your insert logic here
-
-            return true; // Return true if the book is added successfully
-        } catch (Exception $e) {
-            error_log("Greška pri dodavanju knjige: " . $e->getMessage());
-            return false;
-        }
+        $stmt2 = $this->conn->prepare("INSERT INTO autor (ImePrezime) VALUES (?)");
+        $stmt2->bind_param("s", $imePrezime);
+        $stmt2->execute();
+        return (int)$this->conn->insert_id;
     }
 
-    // Privatna metoda za validaciju ID-jeva
-    private function validateIds(?int $autorId, ?int $izdavacId): void {
-        if ($autorId === null || $izdavacId === null) {
-            throw new InvalidArgumentException("Autor ID and Izdavac ID must be provided.");
-        }
+    // Pronađi izdavača ili ga dodaj ako ne postoji
+    private function getOrCreateIzdavac(string $naziv): int {
+        $stmt = $this->conn->prepare("SELECT IzdavacID FROM izdavac WHERE Naziv = ?");
+        $stmt->bind_param("s", $naziv);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        if ($row) return (int)$row['IzdavacID'];
 
-        $stmtAutor = $this->conn->prepare("SELECT AutorID FROM Autor WHERE AutorID = ?");
-        $stmtAutor->bind_param("i", $autorId);
-        $stmtAutor->execute();
-        if ($stmtAutor->get_result()->num_rows === 0) {
-            throw new Exception("Nevažeći ID autora");
-        }
+        $stmt2 = $this->conn->prepare("INSERT INTO izdavac (Naziv) VALUES (?)");
+        $stmt2->bind_param("s", $naziv);
+        $stmt2->execute();
+        return (int)$this->conn->insert_id;
+    }
 
-        $stmtIzdavac = $this->conn->prepare("SELECT IzdavacID FROM Izdavac WHERE IzdavacID = ?");
-        $stmtIzdavac->bind_param("i", $izdavacId);
-        $stmtIzdavac->execute();
-        if ($stmtIzdavac->get_result()->num_rows === 0) {
-            throw new Exception("Nevažeći ID izdavača");
+    // Pronađi vrstu po nazivu
+    private function getVrstaId(string $naziv): int {
+        $stmt = $this->conn->prepare("SELECT IDVrsta FROM vrsta WHERE naziv = ?");
+        $stmt->bind_param("s", $naziv);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        if (!$row) throw new Exception("Vrsta literature nije pronađena");
+        return (int)$row['IDVrsta'];
+    }
+
+    // Dodaj novu knjigu
+    public function addBook(array $bookData): bool {
+        try {
+            $autorId   = $this->getOrCreateAutor(trim($bookData['autor']));
+            $izdavacId = $this->getOrCreateIzdavac(trim($bookData['izdavac']));
+            $vrstaId   = $this->getVrstaId(trim($bookData['vrsta']));
+
+            $naslov         = trim($bookData['naslov']);
+            $isbn           = trim($bookData['isbn'] ?? '');
+            $brojPrimjeraka = (int)($bookData['broj_primjeraka'] ?? 1);
+            $naslovnica     = $bookData['naslovnica'] ?? null;
+
+            $stmt = $this->conn->prepare("
+                INSERT INTO knjige (naslov, AutorID, IzdavacID, VrstaID, ISBN_broj, broj_primjeraka, naslovnica)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->bind_param("siiisis", $naslov, $autorId, $izdavacId, $vrstaId, $isbn, $brojPrimjeraka, $naslovnica);
+            return $stmt->execute();
+
+        } catch (Exception $e) {
+            error_log("Greška pri dodavanju knjige: " . $e->getMessage());
+            throw $e;
         }
     }
 

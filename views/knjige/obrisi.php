@@ -24,7 +24,7 @@ if (!$knjiga) {
 // Glavna logika za brisanje
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
-        if ($knjigaController->deleteBook($knjiga['IDLiteratura'])) {
+        if ($knjigaController->deleteBook($knjiga['IDKnjiga'])) {
             $_SESSION['success'] = "Knjiga uspješno obrisana!";
             header("Location: index.php");
             exit();

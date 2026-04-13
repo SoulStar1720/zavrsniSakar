@@ -33,31 +33,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $upload_dir = $_SERVER['DOCUMENT_ROOT'] . "/zavrsniSakar/naslovnice/";
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0777, true);
-            }
-            $ime_slike = time() . "_" . basename($_FILES['naslovnica']['name']);
-            $putanja_slike = $upload_dir . $ime_slike;
-            move_uploaded_file($_FILES['naslovnica']['tmp_name'], $putanja_slike);
-            }
+        }
+        $ime_slike = time() . "_" . basename($_FILES['naslovnica']['name']);
+        if (move_uploaded_file($_FILES['naslovnica']['tmp_name'], $upload_dir . $ime_slike)) {
+            // ISPRAVAK: relativna web putanja umjesto apsolutne C:/xampp/...
+            $putanja_slike = '/zavrsniSakar/naslovnice/' . $ime_slike;
+        }
+    }
             
-            $podaci = [
-                'naslov' => trim($_POST['naslov']),
-                'autor' => trim($_POST['autor']),
-                'isbn' => trim($_POST['isbn']),
-                'izdavac' => trim($_POST['izdavac']),
-                'vrsta' => $_POST['vrsta'],
-                'broj_primjeraka' => (int)$_POST['broj_primjeraka'],
-                'naslovnica' => $putanja_slike
-                ];
+    $podaci = [
+        'naslov'          => trim($_POST['naslov']),
+        'autor'           => trim($_POST['autor']),
+        'isbn'            => trim($_POST['isbn']),
+        'izdavac'         => trim($_POST['izdavac']),
+        'vrsta'           => $_POST['vrsta'],
+        'broj_primjeraka' => (int)$_POST['broj_primjeraka'],
+        'naslovnica'      => $putanja_slike
+    ];
                 
-        try {
-            if ($knjigaController->addBook($podaci)) {
-                $_SESSION['success'] = "Knjiga uspješno dodana!";
-                header("Location: index.php");
-                exit();
-                }
-            } catch (Exception $e) {
-                $error = $e->getMessage();
-                }
+    try {
+        if ($knjigaController->addBook($podaci)) {
+            $_SESSION['success'] = "Knjiga uspješno dodana!";
+            header("Location: index.php");
+            exit();
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
 }
 ?>
 
