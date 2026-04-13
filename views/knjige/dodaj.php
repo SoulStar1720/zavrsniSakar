@@ -14,16 +14,28 @@ $vrste_literature = [
     'Udžbenik',
     'Fakultativna knjiga',
     'Znanstveni časopis',
-    'Stručna literatura',
     'Zbornik radova',
     'Priručnik',
-    'Roman',
-    'Enciklopedija',
     'Znanstvena monografija',
+    'Enciklopedija',
     'Biografija',
-    'Kriminalistički roman',
     'Povijesna studija',
-    'Strip'
+
+    'Roman',
+    'Ljubavni roman (Romance)',
+    'Fantasy',
+    'Znanstvena fantastika (Sci-Fi)',
+    'Triler',
+    'Horor',
+    'Kriminalistički roman',
+    'Drama',
+    'Avantura',
+    'Povijesni roman',
+    'Young Adult (YA)',
+
+    'Strip',
+    'Manga',
+    'Dječja knjiga'
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

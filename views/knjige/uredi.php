@@ -13,7 +13,28 @@ $vrste_literature = [
     'Udžbenik',
     'Fakultativna knjiga',
     'Znanstveni časopis',
-    'Stručna literatura'
+    'Zbornik radova',
+    'Priručnik',
+    'Znanstvena monografija',
+    'Enciklopedija',
+    'Biografija',
+    'Povijesna studija',
+
+    'Roman',
+    'Ljubavni roman (Romance)',
+    'Fantasy',
+    'Znanstvena fantastika (Sci-Fi)',
+    'Triler',
+    'Horor',
+    'Kriminalistički roman',
+    'Drama',
+    'Avantura',
+    'Povijesni roman',
+    'Young Adult (YA)',
+
+    'Strip',
+    'Manga',
+    'Dječja knjiga'
 ];
 
 $knjiga = null;
