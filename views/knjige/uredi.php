@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
 
-        if ($knjigaController->updateBook($knjiga['IDLiteratura'], $podaci)) {
+        if ($knjigaController->updateBook($knjiga['IDKnjiga'], $podaci)) {
 
             $_SESSION['success'] = "Knjiga uspješno ažurirana!";
             header("Location: index.php");

@@ -177,5 +177,34 @@ class KnjigaController {
     $row = $result->fetch_assoc();
     return (int)$row['total'];
 }
+public function updateBook(int $id, array $bookData): bool {
+    try {
+        $autorId   = $this->getOrCreateAutor(trim($bookData['autor']));
+        $izdavacId = $this->getOrCreateIzdavac(trim($bookData['izdavac']));
+        $vrstaId   = $this->getVrstaId(trim($bookData['vrsta']));
+
+        $naslov         = trim($bookData['naslov']);
+        $isbn           = trim($bookData['isbn'] ?? '');
+        $brojPrimjeraka = (int)($bookData['broj_primjeraka'] ?? 1);
+        $naslovnica     = $bookData['naslovnica'] ?? null;
+
+        $stmt = $this->conn->prepare("
+            UPDATE knjige SET
+                naslov = ?,
+                AutorID = ?,
+                IzdavacID = ?,
+                VrstaID = ?,
+                ISBN_broj = ?,
+                broj_primjeraka = ?,
+                naslovnica = ?
+            WHERE IDKnjiga = ?
+        ");
+        $stmt->bind_param("siiisisi", $naslov, $autorId, $izdavacId, $vrstaId, $isbn, $brojPrimjeraka, $naslovnica, $id);
+        return $stmt->execute();
+    } catch (Exception $e) {
+        error_log("Greška pri ažuriranju knjige: " . $e->getMessage());
+        throw $e;
+    }
+}
 }
 ?>
