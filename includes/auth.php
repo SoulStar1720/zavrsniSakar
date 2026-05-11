@@ -47,7 +47,7 @@ function redirectBasedOnRole() {
     if (isAdmin()) {
         header("Location: views/admin/index.php");
     } else {
-        header("Location: profile.php");
+        header("Location: index.php"); // Promijenjeno s profile.php
     }
     exit();
 }

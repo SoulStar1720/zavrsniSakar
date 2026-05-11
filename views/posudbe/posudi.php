@@ -1,54 +1,53 @@
 <?php
 require_once __DIR__ . '/../../includes/auth.php';
 require_once __DIR__ . '/../../includes/db_connection.php';
-require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../includes/controllers/PosudbaController.php';
 
-requireAdmin();
+// Dozvoli pristup prijavljenim korisnicima
+requireLogin(); 
 
 $posudbaController = new PosudbaController($conn);
 $error = '';
+$success = false;
 
-// Dohvat članova
-$clanovi = [];
-$stmtClanovi = $conn->query("
-    SELECT IDClan, CONCAT(Prezime, ' ', Ime) AS ImePrezime 
-    FROM clan 
-    ORDER BY Prezime
-");
-$clanovi = $stmtClanovi->fetch_all(MYSQLI_ASSOC);
+// Uzimamo ID knjige iz URL-a
+$knjiga_id = isset($_GET['knjiga_id']) ? (int)$_GET['knjiga_id'] : 0;
 
-// Dohvat dostupnih primjeraka (ISPRAVLJENO)
-$primjerci = [];
-$stmtPrimjerci = $conn->query("
-    SELECT 
-        p.IDPrimjerak, 
-        k.naslov 
-    FROM primjerak p
-    JOIN knjige k ON p.KnjigaID = k.IDKnjiga
-    WHERE p.Dostupno = 'dostupno'
-");
-$primjerci = $stmtPrimjerci->fetch_all(MYSQLI_ASSOC);
+if ($knjiga_id <= 0) {
+    die("Nije odabrana knjiga.");
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// 1. Dohvaćamo podatke o knjizi i PRVI dostupni primjerak automatski
+$sql = "SELECT k.naslov, p.IDPrimjerak 
+        FROM knjige k 
+        LEFT JOIN primjerak p ON k.IDKnjiga = p.KnjigaID 
+        WHERE k.IDKnjiga = ? AND p.status = 'dostupno' 
+        LIMIT 1";
 
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $knjiga_id);
+$stmt->execute();
+$result = $stmt->get_result()->fetch_assoc();
+
+if (!$result) {
+    $error = "Nažalost, trenutno nema dostupnih primjeraka ove knjige.";
+} else {
+    $naslov_knjige = $result['naslov'];
+    $automatski_primjerak_id = $result['IDPrimjerak'];
+}
+
+// 2. Obrada posudbe na klik gumba
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($automatski_primjerak_id)) {
     try {
-
-        if ($posudbaController->createLoan(
-            (int)$_POST['clanID'],
-            (int)$_POST['primjerakID']
-        )) {
-
-            $_SESSION['success'] = "Knjiga uspješno posuđena!";
-            header("Location: index.php");
+        // ID člana je onaj tko je ulogiran
+        $clanID = $_SESSION['user_id'];
+        
+        if ($posudbaController->createLoan($clanID, $automatski_primjerak_id)) {
+            echo "<script>alert('Uspješno ste posudili knjigu: $naslov_knjige'); window.location.href='../../index.php';</script>";
             exit();
-
         }
-
     } catch (Exception $e) {
-
         $error = $e->getMessage();
-
     }
 }
 ?>
@@ -56,62 +55,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="hr">
 <head>
-<meta charset="UTF-8">
-<title>Nova posudba</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <?php include __DIR__ . '/../../includes/header.php'; ?>
+    <title>Potvrda posudbe</title>
 </head>
 <body>
     <div class="container mt-5">
-        <div class="card shadow">
+        <div class="card shadow mx-auto" style="max-width: 500px;">
             <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">
-                    <i class="bi bi-book"></i> Nova posudba
-                    <a href="index.php" class="btn btn-light btn-sm float-end">
-                        <i class="bi bi-arrow-left"></i> Natrag
-                    </a>
-                </h3>
+                <h4 class="mb-0">Potvrda posudbe</h4>
             </div>
-            <div class="card-body">
-
-<?php if (!empty($error)): ?>
-    <div class="alert alert-danger">
-        <?= htmlspecialchars($error) ?>
-    </div>
-    <?php endif; ?>
-    <form method="POST">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label">Član</label>
-                <select name="clanID" class="form-select" required>
-                    <?php foreach ($clanovi as $clan): ?>
-                        <option value="<?= $clan['IDClan'] ?>">
-                            <?= htmlspecialchars($clan['ImePrezime']) ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Dostupni primjerci</label>
-                    <select name="primjerakID" class="form-select" required>
-                        <?php foreach ($primjerci as $primjerak): ?>
-                            <option value="<?= $primjerak['IDPrimjerak'] ?>">
-                                <?= htmlspecialchars($primjerak['naslov']) ?> 
-                                (ID: <?= $primjerak['IDPrimjerak'] ?>)
-                            </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-lg"></i> Potvrdi posudbu
-                        </button>
-                    </div>
-                </div>
-            </form>
+            <div class="card-body text-center py-4">
+                <?php if ($error): ?>
+                    <div class="alert alert-danger"><?= $error ?></div>
+                    <a href="../../index.php" class="btn btn-secondary">Povratak</a>
+                <?php else: ?>
+                    <p class="lead">Želite li posuditi knjigu:</p>
+                    <h3 class="text-primary mb-4"><?= htmlspecialchars($naslov_knjige) ?></h3>
+                    
+                    <form method="POST">
+                        <input type="hidden" name="primjerakID" value="<?= $automatski_primjerak_id ?>">
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                Da, posudi odmah
+                            </button>
+                            <a href="../../index.php" class="btn btn-outline-secondary">Odustani</a>
+                        </div>
+                    </form>
+                <?php endif; ?>
+            </div>
+            <div class="card-footer text-muted small text-center">
+                Prijavljeni ste kao: <?= $_SESSION['user_email'] ?? $_SESSION['email'] ?? 'Korisnik' ?>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>
