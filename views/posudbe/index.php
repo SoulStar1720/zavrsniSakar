@@ -25,9 +25,6 @@ $posudbe = $posudbaController->getAllLoans();
                 <h3 class="mb-0">
                     <i class="bi bi-arrow-left-right"></i> Popis posudbi
                 </h3>
-                <a href="posudi.php" class="btn btn-light">
-                    <i class="bi bi-plus-lg"></i> Nova posudba
-                </a>
             </div>
 
             <div class="card-body">
