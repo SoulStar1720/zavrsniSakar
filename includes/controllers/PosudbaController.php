@@ -112,7 +112,6 @@ class PosudbaController {
         }
     }
 
-    // ISPRAVLJENO: Koristi se polje 'status' umjesto 'Dostupno'
     private function checkAvailability(int $primjerakID): string {
         $stmt = $this->conn->prepare("SELECT status FROM primjerak WHERE IDPrimjerak = ?");
         $stmt->bind_param("i", $primjerakID);
@@ -121,7 +120,6 @@ class PosudbaController {
         return $row['status'] ?? 'nepoznato';
     }
 
-    // ISPRAVLJENO: Koristi se polje 'status' umjesto 'Dostupno'
     private function updatePrimjerakStatus(int $primjerakID, string $status): void {
         $stmt = $this->conn->prepare("UPDATE primjerak SET status = ? WHERE IDPrimjerak = ?");
         $stmt->bind_param("si", $status, $primjerakID);

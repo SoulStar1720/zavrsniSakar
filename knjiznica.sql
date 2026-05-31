@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 10, 2026 at 11:04 AM
+-- Generation Time: May 31, 2026 at 11:50 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,6 +43,7 @@ INSERT INTO `autor` (`AutorID`, `ImePrezime`) VALUES
 (11, 'David Crystal'),
 (6, 'David Griffiths'),
 (1, 'Donald Knuth'),
+(23, 'Donna Tartt'),
 (12, 'Erich Gamma'),
 (7, 'George Orwell'),
 (13, 'Ivana Brlić-Mažurani'),
@@ -52,7 +53,9 @@ INSERT INTO `autor` (`AutorID`, `ImePrezime`) VALUES
 (15, 'Multiple Authors'),
 (8, 'National Geographic'),
 (5, 'Razni autori'),
+(21, 'Sarah J. Maas'),
 (2, 'Stephen Hawking'),
+(22, 'Tahereh Mafi'),
 (14, 'Walter Isaacson'),
 (18, 'Yuval Noah Harari');
 
@@ -120,7 +123,8 @@ INSERT INTO `izdavac` (`IzdavacID`, `Naziv`) VALUES
 (7, 'Secker & Warburg'),
 (12, 'Simon & Schuster'),
 (11, 'Školska knjiga'),
-(5, 'Springer');
+(5, 'Springer'),
+(17, 'The Book Service');
 
 -- --------------------------------------------------------
 
@@ -146,19 +150,21 @@ CREATE TABLE `knjige` (
 --
 
 INSERT INTO `knjige` (`IDKnjiga`, `naslov`, `AutorID`, `IzdavacID`, `VrstaID`, `ISBN_broj`, `broj_primjeraka`, `naslovnica`, `godina_izdanja`, `opis`) VALUES
-(1, 'The Art of Computer Programming', 1, 1, 1, '978-0-201-03804-2', 3, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/TheArtofComputerProgramming.png', 1968, 'Fundamentalno djelo o računalnom programiranju'),
-(2, 'A Brief History of Time', 2, 2, 1, '978-0-553-17521-9', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/ABriefHistoryofTime.png', 1988, 'Popularno-znanstveno djelo o kozmologiji'),
+(1, 'The Art of Computer Programming', 1, 1, 2, '978-0-201-03804-2', 3, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/TheArtofComputerProgramming.png', 1968, 'Fundamentalno djelo o računalnom programiranju'),
+(2, 'A Brief History of Time', 2, 2, 8, '978-0-553-17521-9', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/ABriefHistoryofTime.png', 1988, 'Popularno-znanstveno djelo o kozmologiji'),
 (3, 'Mathematical Statistics', 3, 3, 2, '9780134080918', 1, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/MathematicalStatistics.jpg', 2015, 'Udžbenik matematičke statistike'),
-(4, '1984', 7, 7, 6, '978-0-452-28423-4', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/1984.jpg', 1949, 'Distopijski klasik Georgea Orwella'),
-(5, 'Harry Potter and the Sorcerer\'s Stone', 9, 9, 6, '978-0-545-01022-1', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/HarryPotterandPhilosoferStone.jpg', 1997, 'Prvi dio serijala o Harryju Potteru'),
-(6, 'Ponos i predrasude', 10, 10, 6, '978-953-7396-48-9', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/PonosiiPredrasude.jpeg', 1813, 'Klasični roman Jane Austen'),
+(4, '1984', 7, 7, 15, '978-0-452-28423-4', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/1984.jpg', 1949, 'Distopijski klasik Georgea Orwella'),
+(5, 'Harry Potter and the Sorcerer\'s Stone', 9, 9, 14, '978-0-545-01022-1', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/HarryPotterandPhilosoferStone.jpg', 1997, 'Prvi dio serijala o Harryju Potteru'),
+(6, 'Ponos i predrasude', 10, 10, 13, '978-953-7396-48-9', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/PonosiiPredrasude.jpeg', 1813, 'Klasični roman Jane Austen'),
 (7, 'Murder on the Orient Express', 17, 15, 10, '978-0062073501', 3, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/MurderontheOrientExpress.jpg', 1934, 'Kriminalistički roman Agathe Christie'),
 (8, 'Sapiens: A Brief History of Humankind', 18, 16, 11, '978-0062316097', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/SapiensABriefHistoryofHumankind.png', 2011, 'Povijest ljudske vrste'),
-(9, 'Design Patterns: Elements of Reusable Object-Oriented Software', 12, 1, 8, '978-0201633610', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/design_patterns.jpg', 1994, 'Klasično djelo o softverskim dizajn uzorcima'),
+(9, 'Design Patterns: Elements of Reusable Object-Oriented Software', 12, 1, 5, '978-0201633610', 5, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/design_patterns.jpg', 1994, 'Klasično djelo o softverskim dizajn uzorcima'),
 (10, 'National Geographic Encyclopedia', 8, 8, 7, '978-1-4262-1300-0', 6, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/natgeo_encyclopedia.jpg', 2013, 'Opsežna enciklopedija National Geographica'),
-(11, 'Priče iz davnine', 13, 11, 9, '978-953-6747-00-8', 2, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/price_iz_davnine.jpg', 1916, 'Zbirka hrvatskih narodnih pripovijedaka'),
+(11, 'Priče iz davnine', 13, 11, 23, '978-953-6747-00-8', 2, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/price_iz_davnine.jpg', 1916, 'Zbirka hrvatskih narodnih pripovijedaka'),
 (12, 'The Cambridge Encyclopedia of Language', 11, 6, 7, '978-0521736503', 3, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/cambridge_language.jpg', 2010, 'Opsežna enciklopedija o jeziku i lingvistici'),
-(13, 'Watchmen', 16, 14, 12, '978-0930289232', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/Watchmen.jpg', 1986, 'Kultni strip o superherojima s dubokom filozofskom podlogom');
+(13, 'Watchmen', 16, 14, 12, '978-0930289232', 4, 'C:/xampp/htdocs/zavrsniSakar/naslovnice/Watchmen.jpg', 1986, 'Kultni strip o superherojima s dubokom filozofskom podlogom'),
+(18, 'Release Me', 22, 15, 14, '0063480336', 3, '/zavrsniSakar/naslovnice/1776069910_49219803o.jpg', NULL, NULL),
+(19, 'The Secret History', 23, 17, 6, '9780140167771', 4, '/zavrsniSakar/naslovnice/1776070296_3987e9fc-7ff8-4986-bea6-0204c1730653.jpg', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -194,7 +200,10 @@ INSERT INTO `posudba` (`IDPosudba`, `PrimjerakID`, `ClanID`, `DatumPosudbe`, `Da
 (11, 16, 104, '2024-06-01 10:00:00', NULL, '2024-07-01 10:00:00', 'aktivna'),
 (12, 24, 107, '2024-05-15 14:30:00', NULL, '2024-06-14 14:30:00', 'aktivna'),
 (13, 27, 108, '2024-05-20 11:15:00', NULL, '2024-06-19 11:15:00', 'aktivna'),
-(14, 28, 102, '2024-05-22 16:45:00', NULL, '2024-06-21 16:45:00', 'aktivna');
+(14, 28, 102, '2024-05-22 16:45:00', NULL, '2024-06-21 16:45:00', 'aktivna'),
+(15, 10, 1003, '2026-05-11 00:00:00', '2026-05-11 00:00:00', NULL, 'aktivna'),
+(16, 13, 1003, '2026-05-11 00:00:00', NULL, NULL, 'aktivna'),
+(17, 10, 1003, '2026-05-11 00:00:00', NULL, NULL, 'aktivna');
 
 -- --------------------------------------------------------
 
@@ -226,10 +235,10 @@ INSERT INTO `primjerak` (`IDPrimjerak`, `KnjigaID`, `inventarni_broj`, `DatumPos
 (7, 3, 'INV-007', '2024-01-03', NULL, 105, 'posuđeno'),
 (8, 4, 'INV-008', '2024-03-10', NULL, 101, 'posuđeno'),
 (9, 4, 'INV-009', '2024-03-11', NULL, 103, 'posuđeno'),
-(10, 4, 'INV-010', NULL, NULL, NULL, 'dostupno'),
+(10, 4, 'INV-010', NULL, NULL, NULL, 'posuđeno'),
 (11, 5, 'INV-011', '2024-01-15', NULL, 103, 'posuđeno'),
 (12, 6, 'INV-012', '2024-01-16', NULL, 102, 'posuđeno'),
-(13, 6, 'INV-013', NULL, NULL, NULL, 'dostupno'),
+(13, 6, 'INV-013', NULL, NULL, NULL, 'posuđeno'),
 (14, 7, 'INV-014', '2024-05-05', NULL, 106, 'posuđeno'),
 (15, 8, 'INV-015', '2024-05-07', NULL, 108, 'posuđeno'),
 (16, 9, 'INV-016', NULL, NULL, NULL, 'dostupno'),
@@ -276,7 +285,9 @@ INSERT INTO `rezervacija` (`IDRezervacija`, `KnjigaID`, `ClanID`, `DatumRezervac
 (1, 1, 104, '2024-06-01 10:00:00', '2024-06-08 10:00:00', 'aktivna'),
 (2, 3, 107, '2024-06-02 11:30:00', '2024-06-09 11:30:00', 'aktivna'),
 (3, 5, 109, '2024-05-28 14:15:00', '2024-06-04 14:15:00', 'isteklo'),
-(4, 2, 101, '2024-06-03 09:20:00', '2024-06-10 09:20:00', 'aktivna');
+(4, 2, 101, '2024-06-03 09:20:00', '2024-06-10 09:20:00', 'aktivna'),
+(5, 4, 1003, '2026-05-11 00:00:00', NULL, 'otkazano'),
+(6, 7, 1003, '2026-05-11 00:00:00', NULL, 'aktivna');
 
 -- --------------------------------------------------------
 
@@ -306,7 +317,18 @@ INSERT INTO `vrsta` (`IDVrsta`, `naziv`, `opis`) VALUES
 (9, 'Biografija', 'Biografska djela'),
 (10, 'Kriminalistički roman', 'Kriminalistički romani'),
 (11, 'Povijesna studija', 'Povijesne analize i studije'),
-(12, 'Strip', 'Strip izdanja');
+(12, 'Strip', 'Strip izdanja'),
+(13, 'Ljubavni roman (Romance)', 'Priča usmjerena na ljubavne odnose i emocije među likovima.'),
+(14, 'Fantasy', 'Žanr s izmišljenim svjetovima, magijom i nadnaravnim bićima.'),
+(15, 'Znanstvena fantastika (Sci-Fi)', 'Djela koja istražuju budućnost, tehnologiju i svemir.'),
+(16, 'Triler', 'Napeta priča puna neizvjesnosti, opasnosti i iznenadnih obrata.'),
+(17, 'Horor', 'Žanr koji izaziva strah, nelagodu i napetost kod čitatelja.'),
+(18, 'Drama', 'Djelo koje se fokusira na emocionalne sukobe među likovima.'),
+(19, 'Avantura ', 'Uzbudljiva priča puna putovanja, akcije i izazova.'),
+(20, 'Povijesni roman', 'Roman smješten u prošla povijesna razdoblja.'),
+(21, 'Young Adult (YA)', 'Knjige namijenjene mladima, često o odrastanju i identitetu.'),
+(22, 'Manga', 'Japanski stil stripa s prepoznatljivim vizualnim stilom i načinom čitanja.'),
+(23, 'Dječja knjiga', 'Knjige prilagođene djeci, često edukativne ili zabavne.');
 
 --
 -- Indexes for dumped tables
@@ -382,7 +404,7 @@ ALTER TABLE `vrsta`
 -- AUTO_INCREMENT for table `autor`
 --
 ALTER TABLE `autor`
-  MODIFY `AutorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `AutorID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `clan`
@@ -394,37 +416,37 @@ ALTER TABLE `clan`
 -- AUTO_INCREMENT for table `izdavac`
 --
 ALTER TABLE `izdavac`
-  MODIFY `IzdavacID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `IzdavacID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `knjige`
 --
 ALTER TABLE `knjige`
-  MODIFY `IDKnjiga` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `IDKnjiga` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `posudba`
 --
 ALTER TABLE `posudba`
-  MODIFY `IDPosudba` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `IDPosudba` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `primjerak`
 --
 ALTER TABLE `primjerak`
-  MODIFY `IDPrimjerak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `IDPrimjerak` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `rezervacija`
 --
 ALTER TABLE `rezervacija`
-  MODIFY `IDRezervacija` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IDRezervacija` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `vrsta`
 --
 ALTER TABLE `vrsta`
-  MODIFY `IDVrsta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `IDVrsta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- Constraints for dumped tables
