@@ -29,7 +29,7 @@ if (!defined('HEADER_INCLUDED')) {
             font-weight: 600;
             letter-spacing: 0.5px;
         }
-        .custom-search {
+       /* .custom-search {
             position: relative;
             width: 100%;
             max-width: 400px;
@@ -42,7 +42,7 @@ if (!defined('HEADER_INCLUDED')) {
             border: 2px solid #dee2e6;
             outline: none;
             transition: all 0.3s;
-        }
+        }*/
     </style>
 </head>
 <body>
@@ -52,14 +52,14 @@ if (!defined('HEADER_INCLUDED')) {
                 <i class="bi bi-book-half me-2"></i>Knjižnica
             </a>
             <div class="d-flex align-items-center">
-                <div class="custom-search me-3">
+                <!-- <div class="custom-search me-3">
                     <form action="search.php" method="GET">
                         <input type="search" name="query" class="custom-search-input" placeholder="Pretraži...">
                         <button type="submit" class="btn btn-link position-absolute end-0 top-50 translate-middle-y">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
-                </div>
+                </div>-->
                 <?php if (isLoggedIn()): ?>
                     <a href="profile.php" class="btn btn-outline-light me-2">
                         <i class="bi bi-person-circle"></i>
