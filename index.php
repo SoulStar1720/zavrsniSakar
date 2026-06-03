@@ -42,10 +42,22 @@ $knjige = $knjigaController->getAllBooks(1, 20);
                 if (empty($imeSlike) || !file_exists(__DIR__ . "/" . $putanjaSlike)) {
                     $putanjaSlike = "https://via.placeholder.com/300x450?text=Nema+Slike";
                 }
+
+                // POSTAVLJANJE POVEZNICA OVISNO O STATUSU PRIJAVE
+                if (isLoggedIn()) {
+                    $detaljiUrl = "detalji_knjige.php?id=" . $knjiga['IDVrsta'];
+                    $posudiUrl = "views/posudbe/posudi.php?knjiga_id=" . $knjiga['IDVrsta'];
+                    $rezervirajUrl = "rezervacija.php?id=" . $knjiga['IDVrsta'];
+                } else {
+                    // Ako nije prijavljen, sve poveznice vode na login.php
+                    $detaljiUrl = "login.php";
+                    $posudiUrl = "login.php";
+                    $rezervirajUrl = "login.php";
+                }
             ?>
                 <div class="col">
                     <div class="card h-100 shadow-sm book-card">
-                        <a href="detalji_knjige.php?id=<?php echo $knjiga['IDVrsta']; ?>">
+                        <a href="<?php echo $detaljiUrl; ?>">
                             <img src="<?php echo $putanjaSlike; ?>" class="card-img-top" alt="<?php echo $knjiga['naslov']; ?>">
                         </a>
                         <div class="card-body px-2">
@@ -54,8 +66,8 @@ $knjige = $knjigaController->getAllBooks(1, 20);
                         </div>
                         <div class="card-footer bg-transparent border-0 pb-3">
                             <div class="d-grid gap-2">
-                                <a href="views/posudbe/posudi.php?knjiga_id=<?php echo $knjiga['IDVrsta']; ?>" class="btn btn-primary btn-sm">Posudi</a>
-                                <a href="rezervacija.php?id=<?php echo $knjiga['IDVrsta']; ?>" class="btn btn-outline-info btn-sm">Rezerviraj</a>
+                                <a href="<?php echo $posudiUrl; ?>" class="btn btn-primary btn-sm">Posudi</a>
+                                <a href="<?php echo $rezervirajUrl; ?>" class="btn btn-outline-info btn-sm">Rezerviraj</a>
                             </div>
                         </div>
                     </div>
